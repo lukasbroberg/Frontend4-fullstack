@@ -22,7 +22,8 @@ export default function Feed() {
       setError(null);
       const data = await getProblems();
       setProblems(data);
-    } catch {
+    } catch (err) {
+      console.error("Failed to fetch problems", err);
       setError("Kunne ikke hente problemer. Prøv igen.");
     } finally {
       setLoading(false);
