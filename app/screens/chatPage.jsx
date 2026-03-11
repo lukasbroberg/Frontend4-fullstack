@@ -10,6 +10,8 @@ export default function ChatScreen(){
         1. Check whether the user is allowed to view the page or not (signed in?)
         2. Change author to be the name for the given user
         3. seperate code to be more flexible
+        4. Remove connect button, and automatically connect when joining a page
+        5. Change URI to be the endpoint Chat/{chatId} from the URI of the chatPage
     */
 
 
