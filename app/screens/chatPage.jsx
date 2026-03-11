@@ -9,6 +9,7 @@ export default function ChatScreen(){
     /*  TODO:
         1. Check whether the user is allowed to view the page or not (signed in?)
         2. Change author to be the name for the given user
+        3. seperate code to be more flexible
     */
 
 
