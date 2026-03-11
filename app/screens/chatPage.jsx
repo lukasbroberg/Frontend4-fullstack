@@ -6,7 +6,7 @@ import Message from '../components/messageComponent.tsx';
 
 export default function ChatScreen(){
 
-    /*  TODO:
+    /*  TODO: ~ After User handling and problems are fully functional
         1. Check whether the user is allowed to view the page or not (signed in?)
         2. Change author to be the name for the given user
         3. seperate code to be more flexible
