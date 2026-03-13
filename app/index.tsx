@@ -1,6 +1,12 @@
-import { Text, View } from "react-native";
+import React from "react";
+import { View } from "react-native";
+import ChatScreen from './screens/chatPage.jsx';
+
 
 export default function Index() {
+
+  const _tmp_userId = 1;
+
   return (
     <View
       style={{
@@ -9,7 +15,9 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+
+      <ChatScreen></ChatScreen>
+
     </View>
   );
 }
