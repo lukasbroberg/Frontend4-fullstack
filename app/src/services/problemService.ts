@@ -4,7 +4,7 @@ import { Problem } from "../types/Problem";
 // Android emulator: http://10.0.2.2:8080
 // iOS simulator:    http://localhost:8080
 // Fysisk enhed:     http://<din-computer-ip>:8080
-const BASE_URL = "http://10.0.2.2:8080";
+const BASE_URL = "http://localhost:8080";
 
 // --- Mock data (bruges indtil login/auth er klar) ---
 const mockProblems: Problem[] = [
@@ -72,6 +72,18 @@ export async function getProblems(): Promise<Problem[]> {
   await new Promise((resolve) => setTimeout(resolve, 500));
   return mockProblems;
 }
+
+// --- Slet et problem (mock) ---
+export const deleteProblem = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/problems/${id}`, {
+    method: "DELETE",
+  });
+  console.log("Delete status:", response.status);
+  console.log("Delete ok:", response.ok);
+  if (!response.ok) {
+    throw new Error("Kunne ikke slette problemstilling");
+  }
+};
 
 // --- Rigtig API (aktivér når auth er klar) ---
 // export async function getProblems(token: string): Promise<Problem[]> {

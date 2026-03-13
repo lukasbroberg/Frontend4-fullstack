@@ -1,11 +1,14 @@
-import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
 import { Problem } from "../types/Problem";
 
 type Props = {
   problem: Problem;
+  onDelete?: () => void;
 };
 
-export default function ProblemCard({ problem }: Props) {
+const ProblemCard: React.FC<Props> = (props: Props) => {
+  const { problem, onDelete } = props;
   const date = new Date(problem.createdAt).toLocaleDateString("da-DK", {
     day: "numeric",
     month: "long",
@@ -17,10 +20,16 @@ export default function ProblemCard({ problem }: Props) {
       <Text style={styles.title}>{problem.title}</Text>
       <Text style={styles.description}>{problem.description}</Text>
       <Text style={styles.date}>{date}</Text>
+      {onDelete && (
+        <View style={{ marginTop: 8 }}>
+          <Button title="Slet" color="red" onPress={() => { console.log("Slet trykket"); onDelete && onDelete(); }} />
+        </View>
+      )}
     </View>
   );
-}
+};
 
+export default ProblemCard;
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#ffffff",
