@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    RefreshControl,
-    StyleSheet,
-    Text,
-    View,
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
-import { getProblems } from "../services/problemService";
+import { deleteProblem, getProblems } from "../services/problemService";
 import { Problem } from "../types/Problem";
+
 
 export default function Feed() {
   const [problems, setProblems] = useState<Problem[]>([]);
@@ -28,6 +29,17 @@ export default function Feed() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  }
+
+  // Tilføj slet-funktion
+  async function handleDelete(id: number) {
+    alert("handleDelete kaldt med id: " + id);
+    try {
+      await deleteProblem(id);
+      setProblems(currentProblems => currentProblems.filter(p => p.id !== id));
+    } catch (err) {
+      setError("Kunne ikke slette problem.");
     }
   }
 
@@ -61,7 +73,9 @@ export default function Feed() {
       style={styles.container}
       data={problems}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <ProblemCard problem={item} />}
+      renderItem={({ item }) => (
+        <ProblemCard problem={item} onDelete={() => handleDelete(item.id)} />
+      )}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#4f46e5"]} />
       }
