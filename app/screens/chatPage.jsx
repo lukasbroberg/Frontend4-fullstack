@@ -6,6 +6,10 @@ import Message from '../components/messageComponent.tsx';
 
 export default function ChatScreen(){
 
+    //blalslas kode til at skaffe url fra siden
+
+    const chatId = 1;
+
     /*  TODO: ~ After User handling and problems are fully functional
         1. Check whether the user is allowed to view the page or not (signed in?)
         2. Change author to be the name for the given user
@@ -20,6 +24,7 @@ export default function ChatScreen(){
 
     const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
+    const [nameInput, setNameInput] = useState('');
 
     const flatListRef = useRef(null);
 
@@ -48,7 +53,7 @@ export default function ChatScreen(){
     function initiateConnection(){
 
         const client = new Client({
-            brokerURL: 'ws://localhost:8080/chat',
+            brokerURL: 'ws://localhost:8080/chat/${chatId}',
             onConnect: () => {
                 client.subscribe('/topic/messages', (message) => {
                     receiveMessage(message);
@@ -95,7 +100,7 @@ export default function ChatScreen(){
         }
         stompClient.current.publish({
             destination: "/app/chat",
-            body: JSON.stringify({ author: 'Lukas', message: messageInput })
+            body: JSON.stringify({ author: nameInput, message: messageInput })
         });
         setMessageInput('');
     };
@@ -118,6 +123,7 @@ export default function ChatScreen(){
             </FlatList>
             <View style={chatStyle.messageContainer}>
                 <TextInput placeholderTextColor={'gray'} style={chatStyle.messageInput} value={messageInput} placeholder="Message..." onChangeText={setMessageInput}/>
+                <TextInput placeholderTextColor={'gray'} style={chatStyle.messageInput} value={nameInput} placeholder="Name..." onChangeText={setNameInput}/>
                 <Button style={chatStyle.messageSendBtn} title="Send" onPress={sendMessage} disabled={!connected} />
             </View>
             <Button title={connected ? "Disconnect" : "Connect"} onPress={connected ? disconnect : connect} />
