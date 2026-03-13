@@ -53,9 +53,9 @@ export default function ChatScreen(){
     function initiateConnection(){
 
         const client = new Client({
-            brokerURL: 'ws://localhost:8080/chat/${chatId}',
+            brokerURL: `ws://localhost:8080/chat`,
             onConnect: () => {
-                client.subscribe('/topic/messages', (message) => {
+                client.subscribe(`/topic/messages/${chatId}`, (message) => {
                     receiveMessage(message);
                 });
                 client.publish({destination: '/topic', body: 'Joined chat'});
@@ -99,7 +99,7 @@ export default function ChatScreen(){
             return;
         }
         stompClient.current.publish({
-            destination: "/app/chat",
+            destination: `/app/chat/${chatId}`,
             body: JSON.stringify({ author: nameInput, message: messageInput })
         });
         setMessageInput('');
