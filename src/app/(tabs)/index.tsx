@@ -1,3 +1,4 @@
+import { Link } from "expo-router";
 import React from "react";
 import { View } from "react-native";
 
@@ -15,6 +16,12 @@ export default function Index() {
         alignItems: "center",
       }}
     >
+
+      <Link href={{
+        pathname:'/chatPage',
+          params: {id: '1'}
+
+        }}> Første chat wup </Link>
 
      
     </View>

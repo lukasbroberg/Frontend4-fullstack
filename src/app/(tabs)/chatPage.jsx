@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs';
+import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import Message from '../components/messageComponent.tsx';
@@ -8,7 +9,8 @@ export default function ChatScreen(){
 
     //blalslas kode til at skaffe url fra siden
 
-    const chatId = 1;
+    const params = useLocalSearchParams();
+    const chatId = parseInt(params.id);
 
     /*  TODO: ~ After User handling and problems are fully functional
         1. Check whether the user is allowed to view the page or not (signed in?)
@@ -111,7 +113,7 @@ export default function ChatScreen(){
 
     return(
         <View>
-            <Text style={chatStyle.title}>Chat</Text>
+            <Text style={chatStyle.title}>Chat {chatId}</Text>
             <FlatList
                 ref={flatListRef}
                 style={chatStyle.chatView}
