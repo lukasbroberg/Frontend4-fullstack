@@ -1,57 +1,47 @@
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
 import { getProblems } from "../services/problemService";
-import { Problem } from "../types/Problem";
+
+type ProblemItem = {
+  id: number;
+  title: string;
+  description: string;
+  createdAt: string;
+};
 
 export default function Feed() {
-  const [problems, setProblems] = useState<Problem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function fetchProblems() {
-    try {
-      setError(null);
-      const data = await getProblems();
-      setProblems(data);
-    } catch (err) {
-      console.error("Failed to fetch problems", err);
-      setError("Kunne ikke hente problemer. Prøv igen.");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }
+  const [problems, setProblems] = useState<ProblemItem[]>([]);
 
   useEffect(() => {
-    fetchProblems();
-  }, []);
+    async function loadProblems() {
+      try {
+        const data = await getProblems();
+        console.log("Fetched problems:", data);
+        setProblems(data);
+      } catch (error) {
+        console.error("Failed to fetch problems:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  function onRefresh() {
-    setRefreshing(true);
-    fetchProblems();
-  }
+    loadProblems();
+  }, []);
 
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4f46e5" />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.centered}>
-        <Text style={styles.errorText}>{error}</Text>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -62,15 +52,24 @@ export default function Feed() {
       data={problems}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => <ProblemCard problem={item} />}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#4f46e5"]} />
+      ListHeaderComponent={
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.uploadButton}
+            onPress={() => router.push("/UploadProblem")}
+          >
+            <Text style={styles.uploadButtonText}>+problem</Text>
+          </TouchableOpacity>
+        </View>
       }
       ListEmptyComponent={
         <View style={styles.centered}>
           <Text style={styles.emptyText}>Ingen problemer endnu.</Text>
         </View>
       }
-      contentContainerStyle={problems.length === 0 ? styles.fullHeight : styles.listContent}
+      contentContainerStyle={
+        problems.length === 0 ? styles.fullHeight : styles.listContent
+      }
     />
   );
 }
@@ -78,28 +77,38 @@ export default function Feed() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#f3f4f6",
   },
   listContent: {
-    paddingVertical: 8,
+    padding: 16,
   },
   fullHeight: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
+    padding: 16,
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
   },
-  errorText: {
-    color: "#e53e3e",
-    fontSize: 14,
+  headerContainer: {
+    padding: 16,
+    alignItems: "center",
+  },
+  uploadButton: {
+    backgroundColor: "#4f46e5",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+  },
+  uploadButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   emptyText: {
-    color: "#999",
-    fontSize: 14,
+    fontSize: 16,
+    color: "gray",
   },
 });
