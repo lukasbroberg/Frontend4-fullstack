@@ -2,8 +2,9 @@ import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-import MessageComponent from '../components/messageComponent.tsx';
-import useMessageViewModel from '../services/messageViewModel.tsx';
+import MessageComponent from '../components/messageComponent';
+import useMessageViewModel from '../services/messageViewModel';
+import { Message } from '../types/Message';
 
 
 export default function ChatScreen(){
@@ -11,7 +12,7 @@ export default function ChatScreen(){
     //blalslas kode til at skaffe url fra siden
 
     const params = useLocalSearchParams();
-    const chatId = parseInt(params.id);
+    const chatId: number = parseInt(params.id as string);
 
     /*  TODO: ~ After User handling and problems are fully functional
         1. Check whether the user is allowed to view the page or not (signed in?)
@@ -23,7 +24,7 @@ export default function ChatScreen(){
 
 
     const [connected, setConnected] = useState(false);
-    const stompClient = useRef(null);
+    const stompClient = useRef<Client>(null);
 
     //const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
@@ -31,7 +32,7 @@ export default function ChatScreen(){
 
     const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
 
-    const flatListRef = useRef(null);
+    const flatListRef = useRef<FlatList<Message>>(null);
 
     useEffect(() => {
         if(flatListRef.current && messages.length>0){
@@ -39,15 +40,13 @@ export default function ChatScreen(){
         }
     },[messages])
 
-    function receiveMessage(message){
+    function receiveMessage(message: {body: string}){
 
         const data = JSON.parse(message.body);
 
-        const newMessage = Message
+        const newMessage: Message = data;
 
-        setMessages(prevMessages => [...prevMessages, {
-            newMessage
-        }]);
+        setMessages(prevMessages => [...prevMessages, newMessage]);
     }
 
     //Initialize client
@@ -77,7 +76,7 @@ export default function ChatScreen(){
     }
 
     function connect(){
-        if(!stompClient.current){
+        if(stompClient.current == null){
             initiateConnection();
         }
         

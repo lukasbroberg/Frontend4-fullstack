@@ -3,7 +3,7 @@ import { Message } from "../types/Message";
 
 export default function useMessageViewModel(){
 
-    const [messages, setMessages] = useState<Message>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
 
     async function fetchMessagesFromChatId(chatId: Number){
         const response = await fetch(`http://localhost:8080/api/message/chat/${chatId}`, {
