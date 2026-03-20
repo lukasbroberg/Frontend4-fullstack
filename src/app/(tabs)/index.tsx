@@ -23,6 +23,12 @@ export default function Index() {
 
         }}> Første chat wup </Link>
 
+      <Link href={{
+        pathname:'/chatPage',
+          params: {id: '2'}
+
+        }}> Anden chat wup </Link>
+
      
     </View>
   );

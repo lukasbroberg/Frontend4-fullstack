@@ -2,7 +2,8 @@ import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 import { Button, FlatList, StyleSheet, Text, TextInput, View } from "react-native";
-import Message from '../components/messageComponent.tsx';
+import MessageComponent from '../components/messageComponent.tsx';
+import useMessageViewModel from '../services/messageViewModel.tsx';
 
 
 export default function ChatScreen(){
@@ -24,9 +25,11 @@ export default function ChatScreen(){
     const [connected, setConnected] = useState(false);
     const stompClient = useRef(null);
 
-    const [messages, setMessages] = useState([]);
+    //const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
     const [nameInput, setNameInput] = useState('');
+
+    const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
 
     const flatListRef = useRef(null);
 
@@ -40,14 +43,10 @@ export default function ChatScreen(){
 
         const data = JSON.parse(message.body);
 
-        const newMessage = {
-            message: data.message,
-            author: data.author
-        }
+        const newMessage = Message
 
         setMessages(prevMessages => [...prevMessages, {
-            author: data.author,
-            message: data.message
+            newMessage
         }]);
     }
 
@@ -60,7 +59,11 @@ export default function ChatScreen(){
                 client.subscribe(`/topic/messages/${chatId}`, (message) => {
                     receiveMessage(message);
                 });
-                client.publish({destination: '/topic', body: 'Joined chat'});
+                client.subscribe(`/user/queue/errors`, (error) => {
+                    console.log(error.body)
+                })
+                fetchMessagesFromChatId(chatId);
+                //client.publish({destination: `/app/chat/${chatId}`, body: JSON.stringify({author: 1, message: 'joined the chat'})});
                 setConnected(true);
             }
         })
@@ -80,7 +83,6 @@ export default function ChatScreen(){
         
         stompClient.current.activate();
         console.log(stompClient.current);
-        setConnected(true);
     }
 
     function disconnect(){
@@ -119,7 +121,7 @@ export default function ChatScreen(){
                 style={chatStyle.chatView}
                 data={messages}
                 renderItem={({item}) => (
-                    <Message key={item.id} message={item.message} author={item.author}></Message>
+                    <MessageComponent key={item.id} message={item.message} author={item.author}></MessageComponent>
                 )}
                 >
             </FlatList>

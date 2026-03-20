@@ -1,14 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
+import { Message } from "../types/Message";
 
-type MessageProps = {
-    message: string;
-    author: string;
-}
 
-export default function Message({message, author}: MessageProps){
+export default function MessageComponent({message, author}: Message){
     return(
         <View style={messageStyle.container}>
-            <Text style={messageStyle.author}>{author}</Text>
+            <Text style={messageStyle.author}>{(author?author: 'unknown')}</Text>
             <View style={messageStyle.bubble}>
                 <Text>{message}</Text>
             </View>
