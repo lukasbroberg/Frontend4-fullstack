@@ -1,6 +1,6 @@
 export type Message = {
     id: number | null;
-    message: string | null;
-    author: string | null;
+    message: string;
+    author: string | 'uknown';
     sentAt: string;
 }
