@@ -4,9 +4,10 @@ import { Problem } from "../types/Problem";
 
 type Props = {
   problem: Problem;
+  onLikeToggle?: (ProblemId: number) => void;
 };
 
-export default function ProblemCard({ problem }: Props) {
+export default function ProblemCard({ problem, onLikeToggle }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -28,6 +29,17 @@ export default function ProblemCard({ problem }: Props) {
       <Text style={styles.date}>
         {new Date(problem.createdAt).toLocaleDateString()}
       </Text>
+
+       {/* Like button */}
+      <TouchableOpacity
+        style={styles.likeButton}
+        onPress={() => onLikeToggle?.(problem.id)}
+        >
+          <Text style={styles.heartIcon}>
+            {problem.isLikedByUser ? '❤️' : '🤍'}
+          </Text>
+          <Text style={styles.likeCount}>{problem.likeCount}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -57,4 +69,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "gray",
   },
+  likeButton: {
+  flexDirection: "row",
+  alignItems: "center",
+  marginTop: 10,
+  },
+  heartIcon: {
+  fontSize: 20,
+  marginRight: 5,
+  },
+  likeCount: {
+    fontSize: 14,
+    color: "#333",
+  }
 });

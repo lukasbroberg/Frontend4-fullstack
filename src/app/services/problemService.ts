@@ -30,3 +30,23 @@ export async function createProblem(title: string, description: string) {
 
   return response.json();
 }
+
+export async function likeProblem (problemId: number, userId: number): Promise<void> {
+  const response = await fetch (`${API_URL}/${problemId}/like/${userId}`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not like problem: ${response.status}`); 
+  }
+}
+
+export async function unlikeProblem(problemId: number, userId: number): Promise<void> {
+  const response = await fetch(`${API_URL}/${problemId}/like/${userId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not unlike problem: ${response.status}`);
+  }
+}

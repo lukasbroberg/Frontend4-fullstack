@@ -3,4 +3,6 @@ export type Problem = {
   title: string;
   description: string;
   createdAt: string;
+  likeCount: number;
+  isLikedByUser: boolean; 
 };
