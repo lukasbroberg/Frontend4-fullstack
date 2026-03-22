@@ -9,13 +9,15 @@ import {
   View,
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
-import { getProblems } from "../services/problemService";
+import { getProblems, likeProblem, unlikeProblem } from "../services/problemService";
 
 type ProblemItem = {
   id: number;
   title: string;
   description: string;
   createdAt: string;
+  likeCount: number; 
+  isLikedByUser: boolean; 
 };
 
 export default function Feed() {
@@ -38,6 +40,35 @@ export default function Feed() {
     loadProblems();
   }, []);
 
+  const handleLikeToggle = async (problemId: number) => {
+    const userId = 1; // TODO: Replace with real logged-in user ID when login is implemented
+
+    const problem =problems.find((p) => p.id === problemId);
+    if (!problem) return;
+
+    try {
+      if(problem.isLikedByUser){
+        await unlikeProblem(problemId, userId);
+      } else {
+        await likeProblem(problemId, userId);
+      }
+
+      setProblems((prev) => 
+        prev.map((p) => 
+          p.id === problemId
+            ? {
+                ...p,
+                isLikedByUser: !p.isLikedByUser,
+                likeCount: p.isLikedByUser ? p.likeCount -1 : p.likeCount +1,
+              }
+            : p   
+        )
+      )
+    } catch (error) {
+      console.error('Fejl ved like/unlike:', error)
+      }
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -51,7 +82,10 @@ export default function Feed() {
       style={styles.container}
       data={problems}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <ProblemCard problem={item} />}
+
+      renderItem={({ item }) => (
+      <ProblemCard problem={item} onLikeToggle={handleLikeToggle} />
+      )}
       ListHeaderComponent={
         <View style={styles.headerContainer}>
           <TouchableOpacity
