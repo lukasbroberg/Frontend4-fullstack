@@ -15,5 +15,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "src/app/test_old.tsx.bak", "src/app/feed_old.tsx.bak"  ]
 }

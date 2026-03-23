@@ -1,5 +1,5 @@
-import {useState} from "react"
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Problem } from "../types/Problem";
 
 type Props = {

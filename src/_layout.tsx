@@ -5,6 +5,7 @@ export default function RootLayout() {
   
   
   return (
+    //Add AuthProvider here
     // åben
     <Stack> 
       <Stack.Screen name="(tabs)" options={{ headerShown: true }} />
