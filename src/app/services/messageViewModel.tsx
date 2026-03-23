@@ -8,7 +8,7 @@ export default function useMessageViewModel(){
     async function fetchMessagesFromChatId(chatId: Number){
         const response = await fetch(`http://localhost:8080/api/message/chat/${chatId}`, {
             method: 'GET',
-            //credentials: 'include' //Uncomment when session and cookies are working
+            credentials: 'include' //Uncomment when session and cookies are working
 
         })
         const data= await response.json();
