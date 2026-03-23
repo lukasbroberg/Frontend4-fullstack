@@ -1,35 +1,33 @@
+import { View, Text, TouchableOpacity } from "react-native";
+import { useAuth } from "../../src/contexts/AuthContext";
 import { router } from "expo-router";
-import { Text, TouchableOpacity, View } from "react-native";
 
-export default function Index() {
+export default function Home() {
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/(auth)/login");
+  };
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 20,
-      }}
-    >
-      <TouchableOpacity
-        onPress={() => router.push("/")}
-        style={{ backgroundColor: "#2563eb", padding: 15, borderRadius: 10 }}
-      >
-        <Text style={{ color: "white" }}>Hjem</Text>
-      </TouchableOpacity>
+    <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+      <Text style={{fontSize:28,fontWeight:"bold"}}>Hjem</Text>
+
+      <Text style={{marginTop:10}}>
+        Hej {user?.username}
+      </Text>
 
       <TouchableOpacity
-        onPress={() => router.push("/login")}
-        style={{ backgroundColor: "#16a34a", padding: 15, borderRadius: 10 }}
+        onPress={handleLogout}
+        style={{
+          marginTop:20,
+          backgroundColor:"#2563eb",
+          padding:14,
+          borderRadius:10
+        }}
       >
-        <Text style={{ color: "white" }}>Log ind</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() => router.push("/register")}
-        style={{ backgroundColor: "#f59e0b", padding: 15, borderRadius: 10 }}
-      >
-        <Text style={{ color: "white" }}>Register</Text>
+        <Text style={{color:"#fff"}}>Log ud</Text>
       </TouchableOpacity>
     </View>
   );

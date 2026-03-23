@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../services/authService";
+import { storageService } from "../services/storageService";
 import type {
   AuthResponse,
   LoginRequest,
@@ -11,6 +12,7 @@ type AuthContextType = {
   user: UserResponse | null;
   token: string | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
   login: (data: LoginRequest) => Promise<AuthResponse>;
   register: (data: RegisterRequest) => Promise<any>;
   logout: () => Promise<void>;
@@ -23,12 +25,31 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<UserResponse | null>({
-    id: 1,
-    username: "mari_new_3",
-    email: "mari_new_3@gmail.com",
-  });
+  const [user, setUser] = useState<UserResponse | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStoredAuth = async () => {
+      try {
+        const savedToken = await storageService.getToken();
+
+        if (savedToken) {
+          setToken(savedToken);
+
+          // Nếu backend có endpoint /user/me thì nên gọi ở đây
+          // const currentUser = await authService.getMe();
+          // setUser(currentUser);
+        }
+      } catch (error) {
+        console.log("LOAD AUTH ERROR:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStoredAuth();
+  }, []);
 
   const login = async (data: LoginRequest): Promise<AuthResponse> => {
     const response = await authService.login(data);
@@ -53,6 +74,7 @@ export default function AuthProvider({
         user,
         token,
         isAuthenticated: !!token,
+        isLoading,
         login,
         register,
         logout,

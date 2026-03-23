@@ -2,9 +2,11 @@ import axios from "axios";
 import { storageService } from "./storageService";
 
 const apiClient = axios.create({
-  baseURL: "http://10.24.73.206:8080",
+  baseURL: "http://10.209.236.4:8080",
   timeout: 10000,
 });
+
+console.log("API baseURL =", apiClient.defaults.baseURL);
 
 apiClient.interceptors.request.use(
   async (config) => {
