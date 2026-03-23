@@ -40,7 +40,7 @@ export default function RegisterScreen() {
 
       Alert.alert("Succes", "Konto oprettet");
 
-      router.replace("/(app)");
+      router.replace("/(tabs)/feed");
     } catch (error: any) {
       const message =
         error?.response?.data?.message ||

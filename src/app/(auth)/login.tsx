@@ -33,7 +33,7 @@ export default function LoginScreen() {
 
       console.log("LOGIN SCREEN OK:", result);
 
-      router.replace("/(app)");
+      router.replace("/(tabs)/feed");
     } catch (error: any) {
       console.log(
         "LOGIN SCREEN ERROR:",
