@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useAuth } from "../../src/contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function RegisterScreen() {
   const { register, login } = useAuth();

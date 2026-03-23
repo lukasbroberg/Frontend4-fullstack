@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import { useAuth } from "../../src/contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import { router } from "expo-router";
 
 export default function Home() {
