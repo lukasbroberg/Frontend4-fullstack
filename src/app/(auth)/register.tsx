@@ -27,11 +27,12 @@ export default function RegisterScreen() {
     try {
       setLoading(true);
 
-      await register({
+      const response = await register({
         username: username.trim(),
         email: email.trim(),
         password: password.trim(),
       });
+      console.log(register);
 
       await login({
         username: username.trim(),
