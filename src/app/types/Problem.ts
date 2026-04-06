@@ -4,5 +4,6 @@ export type Problem = {
   description: string;
   createdAt: string;
   likeCount: number;
-  isLikedByUser: boolean; 
+  likedByUser: boolean;
+  createdByCurrentUser: boolean;
 };
