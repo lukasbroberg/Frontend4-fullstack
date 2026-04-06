@@ -1,9 +1,16 @@
 import { Problem } from "../types/Problem";
+import { storageService } from "./storageService";
 
-const API_URL = "http://localhost:8080/problems";
+const API_URL = "http://192.168.1.228:8080/problems";
 
 export async function getProblems(): Promise<Problem[]> {
-  const response = await fetch(API_URL);
+  const token = await storageService.getToken();
+  console.log("TOKEN sendt til backend:", token);
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const response = await fetch(API_URL, { headers });
 
   if (!response.ok) {
     throw new Error(`Could not fetch problems: ${response.status}`);
@@ -13,10 +20,12 @@ export async function getProblems(): Promise<Problem[]> {
 }
 
 export async function createProblem(title: string, description: string) {
+  const token = await storageService.getToken();
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       title,
@@ -48,5 +57,22 @@ export async function unlikeProblem(problemId: number, userId: number): Promise<
 
   if (!response.ok) {
     throw new Error(`Could not unlike problem: ${response.status}`);
+  }
+}
+
+export async function deleteProblem(problemId: number): Promise<void> {
+  const token = await storageService.getToken();
+  if (!token) {
+    throw new Error("Not logged in");
+  }
+  const response = await fetch(`${API_URL}/${problemId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not delete problem: ${response.status}`);
   }
 }

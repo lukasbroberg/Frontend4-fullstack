@@ -5,9 +5,10 @@ import { Problem } from "../types/Problem";
 type Props = {
   problem: Problem;
   onLikeToggle?: (ProblemId: number) => void;
+  onDelete?: (ProblemId: number) => void;
 };
 
-export default function ProblemCard({ problem, onLikeToggle }: Props) {
+export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -36,10 +37,19 @@ export default function ProblemCard({ problem, onLikeToggle }: Props) {
         onPress={() => onLikeToggle?.(problem.id)}
         >
           <Text style={styles.heartIcon}>
-            {problem.isLikedByUser ? '❤️' : '🤍'}
+            {problem.likedByUser ? '❤️' : '🤍'}
           </Text>
           <Text style={styles.likeCount}>{problem.likeCount}</Text>
       </TouchableOpacity>
+      {/* Delete button - kun synlig for ejeren */}
+      {problem.createdByCurrentUser && (
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => onDelete?.(problem.id)}
+        >
+          <Text style={styles.deleteText}>🗑️ Slet</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -81,5 +91,12 @@ const styles = StyleSheet.create({
   likeCount: {
     fontSize: 14,
     color: "#333",
-  }
+  },
+  deleteButton: {
+    marginTop: 8,
+  },
+  deleteText: {
+    color: "red",
+    fontWeight: "bold",
+  },
 });

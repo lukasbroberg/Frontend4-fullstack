@@ -9,15 +9,16 @@ import {
   View,
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
-import { getProblems, likeProblem, unlikeProblem } from "../services/problemService";
+import { deleteProblem, getProblems, likeProblem, unlikeProblem } from "../services/problemService";
 
 type ProblemItem = {
   id: number;
   title: string;
   description: string;
   createdAt: string;
-  likeCount: number; 
-  isLikedByUser: boolean; 
+  likeCount: number;
+  likedByUser: boolean;
+  createdByCurrentUser: boolean;
 };
 
 export default function Feed() {
@@ -47,7 +48,7 @@ export default function Feed() {
     if (!problem) return;
 
     try {
-      if(problem.isLikedByUser){
+      if(problem.likedByUser){
         await unlikeProblem(problemId, userId);
       } else {
         await likeProblem(problemId, userId);
@@ -58,8 +59,8 @@ export default function Feed() {
           p.id === problemId
             ? {
                 ...p,
-                isLikedByUser: !p.isLikedByUser,
-                likeCount: p.isLikedByUser ? p.likeCount -1 : p.likeCount +1,
+                likedByUser: !p.likedByUser,
+                likeCount: p.likedByUser ? p.likeCount -1 : p.likeCount +1,
               }
             : p   
         )
@@ -68,6 +69,15 @@ export default function Feed() {
       console.error('Fejl ved like/unlike:', error)
       }
   };
+
+  const handleDelete = async (problemId: number) => {
+  try {
+    await deleteProblem(problemId);
+    setProblems((prev) => prev.filter((p) => p.id !== problemId));
+  } catch (error) {
+    console.error("Fejl ved sletning:", error);
+  }
+};
 
   if (loading) {
     return (
@@ -84,7 +94,7 @@ export default function Feed() {
       keyExtractor={(item) => item.id.toString()}
 
       renderItem={({ item }) => (
-      <ProblemCard problem={item} onLikeToggle={handleLikeToggle} />
+      <ProblemCard problem={item} onLikeToggle={handleLikeToggle} onDelete={handleDelete} />
       )}
       ListHeaderComponent={
         <View style={styles.headerContainer}>

@@ -53,7 +53,7 @@ export default function ChatScreen(){
     function initiateConnection(){
 
         const client = new Client({
-            brokerURL: `ws://localhost:8080/chat`,
+            brokerURL: `ws://192.168.1.228:8080/chat`,
             onConnect: () => {
                 client.subscribe(`/topic/messages/${chatId}`, (message) => {
                     receiveMessage(message);
