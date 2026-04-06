@@ -1,7 +1,7 @@
 import { Problem } from "../types/Problem";
 import { storageService } from "./storageService";
 
-const API_URL = "http://192.168.1.228:8080/problems";
+const API_URL = "http://localhost:8080/problems";
 
 export async function getProblems(): Promise<Problem[]> {
   const token = await storageService.getToken();
