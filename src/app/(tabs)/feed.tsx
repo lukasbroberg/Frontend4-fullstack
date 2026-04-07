@@ -19,6 +19,7 @@ type ProblemItem = {
   likeCount: number;
   likedByUser: boolean;
   createdByCurrentUser: boolean;
+  category: string;
 };
 
 export default function Feed() {

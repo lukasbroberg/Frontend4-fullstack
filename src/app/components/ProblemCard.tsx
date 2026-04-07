@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
 type Props = {
@@ -13,13 +14,25 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{problem.title}</Text>
+        <Text style={styles.title}>{problem.title}
+          <Text 
+          style={
+            [styles.category, 
+              {
+                backgroundColor: (problem.category?lighten(problem.category.hexColor):'lightgray'),
+                color: (problem.category?darken(problem.category.hexColor):'gray')
+              }
+            ]
+          }>{(problem.category?problem.category.name: 'No category')}</Text>
+          </Text>
       <Text
         style={styles.description}
         numberOfLines={expanded ? undefined : 3}
       >
         {problem.description}
       </Text>
+
+
       {problem.description.length > 150 && (
         <TouchableOpacity onPress={() => setExpanded(!expanded)}>
           <Text style={styles.seeMore}>
@@ -99,4 +112,15 @@ const styles = StyleSheet.create({
     color: "red",
     fontWeight: "bold",
   },
+  category: {
+    color: 'black',
+    marginLeft: 20,
+    fontSize: 12,
+    textAlign: 'center',
+    justifyContent: 'center',
+    padding: 5,
+    borderRadius: 20,
+    fontWeight: 'normal',
+  }
+
 });

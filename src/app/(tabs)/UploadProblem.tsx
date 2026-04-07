@@ -1,17 +1,25 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-    Button,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import CategoryService from "../services/categoryService";
 import { createProblem } from "../services/problemService";
+import { Category } from "../types/Category";
 
 export default function UploadProblemScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState([]);
+  const {getAllCategories} = CategoryService();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category>();
 
   async function handleUpload() {
     try {
@@ -20,7 +28,7 @@ export default function UploadProblemScreen() {
         return;
       }
 
-      await createProblem(title, description);
+      await createProblem(title, description, selectedCategory);
 
       setTitle("");
       setDescription("");
@@ -33,6 +41,45 @@ export default function UploadProblemScreen() {
     }
   }
 
+  useEffect( () => {
+    const fetchData = async(): Promise<void> => {
+      const categories = await getAllCategories();
+      setCategories(categories);
+    }
+    fetchData();
+    
+  },[])
+
+
+  function DropdownMenu(){
+    if(!dropdownOpen){
+      return(
+        <View>
+          <TouchableOpacity onPress={() => {dropdownOpen?setDropdownOpen(false): setDropdownOpen(true)}} style={[styles.input, {backgroundColor: selectedCategory?.hexColor}]}>
+            <Text>{(selectedCategory?.name==null ?"Choose category": selectedCategory?.name)}</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    
+    return(
+      <View>
+        <FlatList data={categories}
+                  renderItem={({item}) => (
+                    <TouchableOpacity style={[styles.input, {backgroundColor: item.hexColor}]} onPress={() => {
+                        dropdownOpen?setDropdownOpen(false): setDropdownOpen(true);
+                        setSelectedCategory(item);
+                        }}>
+                      <Text>{item.name}</Text>
+                    </TouchableOpacity>
+                  )}>
+        </FlatList>
+
+      </View>
+    )
+
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Titel</Text>
@@ -42,6 +89,11 @@ export default function UploadProblemScreen() {
         onChangeText={setTitle}
         placeholder="Indtast titel"
       />
+      
+      <Text style={styles.label}>Category</Text>
+      <View>
+        <DropdownMenu isOpened={true} items={[]}></DropdownMenu>
+      </View>
 
       <Text style={styles.label}>Beskrivelse</Text>
       <TextInput

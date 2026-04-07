@@ -1,3 +1,4 @@
+import { Category } from "../types/Category";
 import { Problem } from "../types/Problem";
 import { storageService } from "./storageService";
 
@@ -19,7 +20,7 @@ export async function getProblems(): Promise<Problem[]> {
   return response.json();
 }
 
-export async function createProblem(title: string, description: string) {
+export async function createProblem(title: string, description: string, category: Category) {
   const token = await storageService.getToken();
   const response = await fetch(API_URL, {
     method: "POST",
@@ -30,6 +31,7 @@ export async function createProblem(title: string, description: string) {
     body: JSON.stringify({
       title,
       description,
+      category
     }),
   });
 
