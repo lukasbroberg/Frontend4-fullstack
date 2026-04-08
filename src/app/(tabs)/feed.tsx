@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
+import { useAuth } from "../contexts/AuthContext";
 import { deleteProblem, getProblems, likeProblem, unlikeProblem } from "../services/problemService";
 
 type ProblemItem = {
@@ -25,6 +26,8 @@ type ProblemItem = {
 export default function Feed() {
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState<ProblemItem[]>([]);
+
+  const {user,token,isAuthenticated} = useAuth();
 
   useEffect(() => {
     async function loadProblems() {
@@ -43,7 +46,13 @@ export default function Feed() {
   }, []);
 
   const handleLikeToggle = async (problemId: number) => {
-    const userId = 1; // TODO: Replace with real logged-in user ID when login is implemented
+    const userId = user?.id; // TODO: Replace with real logged-in user ID when login is implemented
+
+    if(userId==null){
+      return;
+    }
+
+    console.log(userId)
 
     const problem =problems.find((p) => p.id === problemId);
     if (!problem) return;

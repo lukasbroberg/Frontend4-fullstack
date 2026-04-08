@@ -45,6 +45,7 @@ export async function createProblem(title: string, description: string, category
 export async function likeProblem (problemId: number, userId: number): Promise<void> {
   const response = await fetch (`${API_URL}/${problemId}/like/${userId}`, {
     method: "POST",
+    credentials: "include",
   });
 
   if (!response.ok) {
@@ -53,8 +54,14 @@ export async function likeProblem (problemId: number, userId: number): Promise<v
 }
 
 export async function unlikeProblem(problemId: number, userId: number): Promise<void> {
+
+  if(userId==null || problemId==null){
+    return;
+  }
+
   const response = await fetch(`${API_URL}/${problemId}/like/${userId}`, {
     method: "DELETE",
+    credentials: "include",
   });
 
   if (!response.ok) {
