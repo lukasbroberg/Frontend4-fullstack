@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
@@ -10,10 +10,11 @@ type Props = {
 };
 
 export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) {
-  const [expanded, setExpanded] = useState(false);
+  const router =useRouter();
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={() => router.push({pathname: '/problem/[id]', params: {id: problem.id, data: JSON.stringify(problem) } } as any)}>
+    
         <Text style={styles.title}>{problem.title}
           <Text 
           style={
@@ -27,19 +28,11 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
           </Text>
       <Text
         style={styles.description}
-        numberOfLines={expanded ? undefined : 3}
+        numberOfLines={2}
       >
         {problem.description}
       </Text>
 
-
-      {problem.description.length > 150 && (
-        <TouchableOpacity onPress={() => setExpanded(!expanded)}>
-          <Text style={styles.seeMore}>
-            {expanded ? "See less" : "See more"}
-          </Text>
-        </TouchableOpacity>
-      )}
       <Text style={styles.date}>
         {new Date(problem.createdAt).toLocaleDateString()}
       </Text>
@@ -63,7 +56,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
           <Text style={styles.deleteText}>🗑️ Slet</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </TouchableOpacity>
   );
 }
 
