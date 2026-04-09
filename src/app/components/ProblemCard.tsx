@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
+import { EvilIcons, Ionicons, MaterialIcons } from "@expo/vector-icons";
+
+
 
 type Props = {
   problem: Problem;
@@ -75,24 +78,35 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
       </Text>
 
        {/* Like button */}
-      <TouchableOpacity
-        style={styles.likeButton}
+      <View style={styles.actionsRow}>
+        <TouchableOpacity
+        style={[styles.likeButton,styles.likeButtonInlineReset]}
         onPress={() => onLikeToggle?.(problem.id)}
         >
-          <Text style={styles.heartIcon}>
-            {problem.likedByUser ? '❤️' : '🤍'}
-          </Text>
+        {problem.likedByUser ? (
+          <Ionicons name="thumbs-up" size={20} color="black" />
+        ) : (
+        <EvilIcons name="like" size={24} color="black" />
+        )}
+        
+        {problem.likedByUser && (
           <Text style={styles.likeCount}>{problem.likeCount}</Text>
-      </TouchableOpacity>
-      {/* Delete button - kun synlig for ejeren */}
-      {problem.createdByCurrentUser && (
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={handleDelete}
-        >
-          <Text style={styles.deleteText}>🗑️ Slet</Text>
-        </TouchableOpacity>
-      )}
+        )}
+          </TouchableOpacity>
+          
+          {/* Delete button - kun synlig for ejeren */}
+          {problem.createdByCurrentUser && (
+            <TouchableOpacity
+            style={[styles.deleteButton,  styles.deleteButtonInlineReset]}
+            onPress={handleDelete}
+          >
+            <MaterialIcons name="delete-outline" size={18} color="black" />
+            <Text style={[styles.deleteText,  styles.deleteTextSpacing]}></Text>
+            </TouchableOpacity>
+          )}
+          
+      </View>
+          
     </TouchableOpacity>
   );
 }
@@ -126,10 +140,6 @@ const styles = StyleSheet.create({
   flexDirection: "row",
   alignItems: "center",
   marginTop: 10,
-  },
-  heartIcon: {
-  fontSize: 20,
-  marginRight: 5,
   },
   likeCount: {
     fontSize: 14,
@@ -202,4 +212,22 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     fontWeight: 'normal',
   },
+  actionsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+    marginTop: 10,
+  },
+  likeButtonInlineReset: {
+    marginTop: 0,
+  },
+  deleteButtonInlineReset: {
+    marginTop: 0,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  deleteTextSpacing: {
+    marginLeft: 4,
+  },
+
 });
