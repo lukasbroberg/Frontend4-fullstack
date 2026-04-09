@@ -1,12 +1,14 @@
-import { useLocalSearchParams, Stack } from "expo-router";
-import { ScrollView, StyleSheet,Text, View } from "react-native";
+import { useLocalSearchParams, Stack, useRouter } from "expo-router";
+import { ScrollView, StyleSheet,Text,TouchableOpacity, View } from "react-native";
 import {darken, lighten} from "../tools/colorTool";
 import { Problem} from "../types/Problem";
+import {Feather} from "@expo/vector-icons";
 
 export default function ProblemDetail(){
     const{data} = useLocalSearchParams();
 
     const problem: Problem = JSON.parse(data as string);
+    const router = useRouter();
 
     return (
         <ScrollView style={styles.container}>
@@ -22,6 +24,16 @@ export default function ProblemDetail(){
             <Text style={styles.description}>{problem.description}</Text>
 
             <Text style={styles.date}>{new Date(problem.createdAt).toLocaleDateString()}</Text>
+
+            {problem.createdByCurrentUser && (
+                <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => router.push({pathname: '/problem/edit/[id]', params: { id: problem.id, data: JSON.stringify(problem)}} as any)}
+                >
+                    <Feather name="edit" size={20} color="#333" />
+                    <Text style={styles.editText}>Redigere</Text>
+                </TouchableOpacity>
+            )}
         
         </ScrollView>
     );
@@ -49,5 +61,17 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     color: 'gray',
+  },
+
+  editButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    gap:6,
+  },
+
+  editText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
