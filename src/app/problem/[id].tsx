@@ -1,22 +1,17 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, StyleSheet,Text, TouchableOpacity, View } from "react-native";
+import { useLocalSearchParams, Stack } from "expo-router";
+import { ScrollView, StyleSheet,Text, View } from "react-native";
 import {darken, lighten} from "../tools/colorTool";
 import { Problem} from "../types/Problem";
 
 export default function ProblemDetail(){
     const{data} = useLocalSearchParams();
-    const router = useRouter();
 
     const problem: Problem = JSON.parse(data as string);
 
     return (
         <ScrollView style={styles.container}>
 
-            <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                <Text style={styles.backText}>← Back</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.title}>{problem.title}</Text>
+            <Stack.Screen options={{ title: problem.title}} />
 
             <View style={[styles.categoryBadge, {backgroundColor: problem.category ? lighten(problem.category.hexColor) : "lightgray"}]}>
                 <Text style={{color: problem.category ? darken(problem.category.hexColor): 'gray', fontSize: 12}}>
@@ -37,18 +32,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     padding: 20,
-  },
-  backButton: {
-    marginBottom: 16,
-  },
-  backText: {
-    fontSize: 16,
-    color: '#555',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
   },
   categoryBadge: {
     alignSelf: 'flex-start',
