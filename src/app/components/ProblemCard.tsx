@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Problem } from "../types/Problem";
 
 type Props = {
@@ -10,9 +10,45 @@ type Props = {
 
 export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  function handleDelete() {
+    if (Platform.OS === "web") {
+      setShowConfirm(true);
+    } else {
+      Alert.alert(
+        "Slet problem",
+        "Er du sikker på, at du vil slette dette problem?",
+        [
+          { text: "Annuller", style: "cancel" },
+          { text: "Slet", style: "destructive", onPress: () => onDelete?.(problem.id) },
+        ]
+      );
+    }
+  }
 
   return (
     <View style={styles.card}>
+      {/* Bekræftelsesdialog (web) */}
+      <Modal visible={showConfirm} transparent animationType="fade">
+        <View style={styles.overlay}>
+          <View style={styles.dialog}>
+            <Text style={styles.dialogTitle}>Slet problem</Text>
+            <Text style={styles.dialogMessage}>Er du sikker på, at du vil slette dette problem?</Text>
+            <View style={styles.dialogButtons}>
+              <Pressable style={styles.cancelBtn} onPress={() => setShowConfirm(false)}>
+                <Text style={styles.cancelText}>Annuller</Text>
+              </Pressable>
+              <Pressable
+                style={styles.confirmBtn}
+                onPress={() => { setShowConfirm(false); onDelete?.(problem.id); }}
+              >
+                <Text style={styles.confirmText}>Slet</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <Text style={styles.title}>{problem.title}</Text>
       <Text
         style={styles.description}
@@ -45,7 +81,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
       {problem.createdByCurrentUser && (
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => onDelete?.(problem.id)}
+          onPress={handleDelete}
         >
           <Text style={styles.deleteText}>🗑️ Slet</Text>
         </TouchableOpacity>
@@ -98,5 +134,56 @@ const styles = StyleSheet.create({
   deleteText: {
     color: "red",
     fontWeight: "bold",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dialog: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 24,
+    width: 300,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  dialogTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  dialogMessage: {
+    fontSize: 14,
+    color: "#444",
+    marginBottom: 20,
+  },
+  dialogButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 10,
+  },
+  cancelBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: "#eee",
+  },
+  cancelText: {
+    color: "#333",
+    fontWeight: "600",
+  },
+  confirmBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: "#e53935",
+  },
+  confirmText: {
+    color: "white",
+    fontWeight: "600",
   },
 });
