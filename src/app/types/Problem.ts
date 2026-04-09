@@ -1,3 +1,5 @@
+import { Category } from "./Category";
+
 export type Problem = {
   id: number;
   title: string;
@@ -6,4 +8,5 @@ export type Problem = {
   likeCount: number;
   likedByUser: boolean;
   createdByCurrentUser: boolean;
+  category: Category;
 };

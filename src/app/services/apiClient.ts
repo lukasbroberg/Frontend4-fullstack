@@ -2,7 +2,7 @@ import axios from "axios";
 import { storageService } from "./storageService";
 
 const apiClient = axios.create({
-  baseURL: "http://192.168.1.228:8080",
+  baseURL: "http://localhost:8080",
   timeout: 10000,
 });
 

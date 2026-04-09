@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useRouter } from "expo-router";
 import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
 type Props = {
@@ -11,6 +13,7 @@ type Props = {
 export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
 
   function handleDelete() {
     if (Platform.OS === "web") {
@@ -28,7 +31,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
   }
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={() => router.push({pathname: '/problem/[id]', params: {id: problem.id, data: JSON.stringify(problem) } } as any)}>
       {/* Bekræftelsesdialog (web) */}
       <Modal visible={showConfirm} transparent animationType="fade">
         <View style={styles.overlay}>
@@ -49,20 +52,24 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
           </View>
         </View>
       </Modal>
-      <Text style={styles.title}>{problem.title}</Text>
+      <Text style={styles.title}>{problem.title}
+        <Text
+          style={[
+            styles.category,
+            {
+              backgroundColor: (problem.category ? lighten(problem.category.hexColor) : 'lightgray'),
+              color: (problem.category ? darken(problem.category.hexColor) : 'gray'),
+            },
+          ]}
+        >{problem.category ? problem.category.name : 'No category'}</Text>
+      </Text>
       <Text
         style={styles.description}
-        numberOfLines={expanded ? undefined : 3}
+        numberOfLines={2}
       >
         {problem.description}
       </Text>
-      {problem.description.length > 150 && (
-        <TouchableOpacity onPress={() => setExpanded(!expanded)}>
-          <Text style={styles.seeMore}>
-            {expanded ? "See less" : "See more"}
-          </Text>
-        </TouchableOpacity>
-      )}
+
       <Text style={styles.date}>
         {new Date(problem.createdAt).toLocaleDateString()}
       </Text>
@@ -86,7 +93,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
           <Text style={styles.deleteText}>🗑️ Slet</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -185,5 +192,14 @@ const styles = StyleSheet.create({
   confirmText: {
     color: "white",
     fontWeight: "600",
+  },
+  category: {
+    color: 'black',
+    marginLeft: 20,
+    fontSize: 12,
+    textAlign: 'center',
+    padding: 5,
+    borderRadius: 20,
+    fontWeight: 'normal',
   },
 });
