@@ -88,3 +88,23 @@ export async function deleteProblem(problemId: number): Promise<void> {
     throw new Error(`Could not delete problem: ${response.status}`);
   }
 }
+
+export async function updateProblem(id: number, title: string, description: string, category: Category) {
+  const token = await storageService.getToken();
+  if (!token){
+    throw new Error ("Not logged in");
+  }
+
+  const response = await fetch(`${API_URL}/${id}`,{
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({title, description, category}),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Could not update problem: ${response.status}`);
+  }
+}
