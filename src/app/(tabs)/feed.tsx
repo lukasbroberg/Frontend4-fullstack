@@ -10,19 +10,34 @@ import {
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
 import { useAuth } from "../contexts/AuthContext";
-import { deleteProblem, getProblems, likeProblem, unlikeProblem } from "../services/problemService";
+import {
+  deleteProblem,
+  getProblems,
+  likeProblem,
+  ProblemSort,
+  unlikeProblem,
+} from "../services/problemService";
 import { Problem } from "../types/Problem";
+
+const SORT_OPTIONS: { label: string; value: ProblemSort }[] = [
+  { label: "Flest likes", value: "likesdesc" },
+  { label: "Faerrest likes", value: "likesasc" },
+  { label: "Nyeste", value: "datedesc" },
+  { label: "Aeldste", value: "dateasc" },
+];
 
 export default function Feed() {
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState<Problem[]>([]);
+  const [selectedSort, setSelectedSort] = useState<ProblemSort | undefined>(undefined);
 
   const { user } = useAuth();
 
   useEffect(() => {
     async function loadProblems() {
       try {
-        const data = await getProblems();
+        setLoading(true);
+        const data = await getProblems(selectedSort);
         console.log("Fetched problems:", data);
         setProblems(data);
       } catch (error) {
@@ -33,7 +48,11 @@ export default function Feed() {
     }
 
     loadProblems();
-  }, []);
+  }, [selectedSort]);
+
+  const handleSortPress = (sortValue: ProblemSort) => {
+    setSelectedSort((prev) => (prev === sortValue ? undefined : sortValue));
+  };
 
   const handleLikeToggle = async (problemId: number) => {
     const userId = user?.id; // TODO: Replace with real logged-in user ID when login is implemented
@@ -98,6 +117,25 @@ export default function Feed() {
       )}
       ListHeaderComponent={
         <View style={styles.headerContainer}>
+          <View style={styles.sortContainer}>
+            {SORT_OPTIONS.map((option) => {
+              const isSelected = selectedSort === option.value;
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  style={[styles.sortButton, isSelected && styles.sortButtonSelected]}
+                  onPress={() => handleSortPress(option.value)}
+                >
+                  <Text
+                    style={[styles.sortButtonText, isSelected && styles.sortButtonTextSelected]}
+                  >
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
           <TouchableOpacity
             style={styles.uploadButton}
             onPress={() => router.push("/UploadProblem")}
@@ -138,13 +176,36 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     padding: 16,
-    alignItems: "center",
+    gap: 12,
+  },
+  sortContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  sortButton: {
+    backgroundColor: "#e5e7eb",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+  },
+  sortButtonSelected: {
+    backgroundColor: "#4f46e5",
+  },
+  sortButtonText: {
+    color: "#1f2937",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  sortButtonTextSelected: {
+    color: "#ffffff",
   },
   uploadButton: {
     backgroundColor: "#4f46e5",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 12,
+    alignSelf: "center",
   },
   uploadButtonText: {
     color: "white",
