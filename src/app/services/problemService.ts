@@ -45,10 +45,13 @@ export async function createProblem(title: string, description: string, category
   return response.json();
 }
 
-export async function likeProblem (problemId: number, userId: number): Promise<void> {
-  const response = await fetch (`${API_URL}/${problemId}/like/${userId}`, {
+export async function likeProblem (problemId: number): Promise<void> {
+  const token = await storageService.getToken();
+  const response = await fetch (`${API_URL}/${problemId}/like`, {
     method: "POST",
-    credentials: "include",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}), //
+    },
   });
 
   if (!response.ok) {
@@ -56,21 +59,20 @@ export async function likeProblem (problemId: number, userId: number): Promise<v
   }
 }
 
-export async function unlikeProblem(problemId: number, userId: number): Promise<void> {
-
-  if(userId==null || problemId==null){
-    return;
-  }
-
-  const response = await fetch(`${API_URL}/${problemId}/like/${userId}`, {
-    method: "DELETE",
-    credentials: "include",
+export async function unlikeProblem(problemId: number): Promise<void> {
+  const token = await storageService.getToken();
+  const response = await fetch(`${API_URL}/${problemId}/like`,{
+    method: "DELETE", 
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}`} : {}),
+    },
   });
 
   if (!response.ok) {
     throw new Error(`Could not unlike problem: ${response.status}`);
   }
 }
+
 
 export async function deleteProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();

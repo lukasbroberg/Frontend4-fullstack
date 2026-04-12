@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
-import { EvilIcons, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 
 
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) {
-  const [expanded, setExpanded] = useState(false);
+
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
 
@@ -84,9 +84,9 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
         onPress={() => onLikeToggle?.(problem.id)}
         >
         {problem.likedByUser ? (
-          <Ionicons name="thumbs-up" size={20} color="black" />
+          <MaterialCommunityIcons name="thumb-up" size={22} color="black" />
         ) : (
-        <EvilIcons name="like" size={24} color="black" />
+        <MaterialCommunityIcons name="thumb-up-outline" size={22} color="black" />
         )}
         
         {problem.likedByUser && (
