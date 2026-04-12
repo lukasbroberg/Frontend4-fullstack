@@ -11,21 +11,11 @@ import {
 import ProblemCard from "../components/ProblemCard";
 import { useAuth } from "../contexts/AuthContext";
 import { deleteProblem, getProblems, likeProblem, unlikeProblem } from "../services/problemService";
-
-type ProblemItem = {
-  id: number;
-  title: string;
-  description: string;
-  createdAt: string;
-  likeCount: number;
-  likedByUser: boolean;
-  createdByCurrentUser: boolean;
-  category: string;
-};
+import { Problem } from "../types/Problem";
 
 export default function Feed() {
   const [loading, setLoading] = useState(true);
-  const [problems, setProblems] = useState<ProblemItem[]>([]);
+  const [problems, setProblems] = useState<Problem[]>([]);
 
   const {user,token,isAuthenticated} = useAuth();
 
