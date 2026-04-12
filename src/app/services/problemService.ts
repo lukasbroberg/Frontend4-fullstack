@@ -4,14 +4,17 @@ import { storageService } from "./storageService";
 
 const API_URL = "http://localhost:8080/problems";
 
-export async function getProblems(): Promise<Problem[]> {
+export type ProblemSort = "likesdesc" | "likesasc" | "datedesc" | "dateasc";
+
+export async function getProblems(sort?: ProblemSort): Promise<Problem[]> {
   const token = await storageService.getToken();
   console.log("TOKEN sendt til backend:", token);
   const headers: Record<string, string> = {};
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  const response = await fetch(API_URL, { headers });
+  const url = sort ? `${API_URL}?sort=${encodeURIComponent(sort)}` : API_URL;
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
     throw new Error(`Could not fetch problems: ${response.status}`);
