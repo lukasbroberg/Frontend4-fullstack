@@ -25,14 +25,11 @@ const SORT_OPTIONS: { label: string; value: ProblemSort }[] = [
   { label: "Nyeste", value: "datedesc" },
   { label: "Aeldste", value: "dateasc" },
 ];
-import { deleteProblem, getProblems, likeProblem, unlikeProblem } from "../services/problemService";
-import { Problem } from "../types/Problem";
 
 export default function Feed() {
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState<Problem[]>([]);
   const [selectedSort, setSelectedSort] = useState<ProblemSort | undefined>(undefined);
-  const [problems, setProblems] = useState<Problem[]>([]);
 
   const { user } = useAuth();
 
