@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 
 
@@ -100,7 +100,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
             style={[styles.deleteButton,  styles.deleteButtonInlineReset]}
             onPress={handleDelete}
           >
-            <MaterialIcons name="delete-outline" size={18} color="black" />
+            <MaterialCommunityIcons name="delete-outline" size={22} color="black" />
             <Text style={[styles.deleteText,  styles.deleteTextSpacing]}></Text>
             </TouchableOpacity>
           )}
