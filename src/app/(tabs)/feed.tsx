@@ -55,7 +55,7 @@ export default function Feed() {
   };
 
   const handleLikeToggle = async (problemId: number) => {
-    const userId = user?.id; // TODO: Replace with real logged-in user ID when login is implemented
+    const userId = user?.id; 
 
     if(userId==null){
       return;
@@ -68,9 +68,9 @@ export default function Feed() {
 
     try {
       if(problem.likedByUser){
-        await unlikeProblem(problemId, userId);
+        await unlikeProblem(problemId);
       } else {
-        await likeProblem(problemId, userId);
+        await likeProblem(problemId);
       }
 
       setProblems((prev) => 
