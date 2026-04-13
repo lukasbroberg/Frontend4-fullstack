@@ -34,7 +34,7 @@ export default function TabsLayout() {
             headerRight: loginButtonHeader,
         }}>
             <Tabs.Screen name="feed" options={{ title: "ProblemHub" }} />
-            <Tabs.Screen name="chatPage" options={{ title: "Chat" }} />
+            <Tabs.Screen name="UploadProblem" options={{ title: "Create new" }} />
         </Tabs>
     )
 }

@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -136,12 +135,6 @@ export default function Feed() {
             })}
           </View>
 
-          <TouchableOpacity
-            style={styles.uploadButton}
-            onPress={() => router.push("/UploadProblem")}
-          >
-            <Text style={styles.uploadButtonText}>+problem</Text>
-          </TouchableOpacity>
         </View>
       }
       ListEmptyComponent={

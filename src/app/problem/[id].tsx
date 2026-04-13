@@ -1,8 +1,9 @@
-import { useLocalSearchParams, Stack, useRouter } from "expo-router";
-import { ScrollView, StyleSheet,Text,TouchableOpacity, View } from "react-native";
-import {darken, lighten} from "../tools/colorTool";
-import { Problem} from "../types/Problem";
-import {Feather} from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ChatScreen from "../screens/chatPage";
+import { darken, lighten } from "../tools/colorTool";
+import { Problem } from "../types/Problem";
 
 export default function ProblemDetail(){
     const{data} = useLocalSearchParams();
@@ -25,6 +26,7 @@ export default function ProblemDetail(){
 
             <Text style={styles.date}>{new Date(problem.createdAt).toLocaleDateString()}</Text>
 
+
             {problem.createdByCurrentUser && (
                 <TouchableOpacity
                 style={styles.editButton}
@@ -34,6 +36,12 @@ export default function ProblemDetail(){
                     <Text style={styles.editText}>Redigere</Text>
                 </TouchableOpacity>
             )}
+
+            <View>
+              <Text style={styles.label}>Beskeder</Text>
+              <ChatScreen>
+              </ChatScreen>
+            </View>
         
         </ScrollView>
     );
@@ -74,4 +82,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  label: {
+    marginTop: 20
+  }
 });
