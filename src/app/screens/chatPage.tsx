@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MessageComponent from '../components/messageComponent';
 import { useAuth } from '../contexts/AuthContext';
+import { getChatFromProblemId } from '../services/chatService';
 import useMessageViewModel from '../services/messageViewModel';
 import { Message } from '../types/Message';
 
@@ -14,33 +15,14 @@ const baseURL = "http://localhost:8080";
 
 export default function ChatScreen(){
 
-    //blalslas kode til at skaffe url fra siden
-
     const params = useLocalSearchParams();
-    const chatId: number = parseInt(params.id as string);
-
-    console.log(chatId)
-
-    /*  TODO: ~ After User handling and problems are fully functional
-        1. Check whether the user is allowed to view the page or not (signed in?)
-        2. Change author to be the name for the given user
-        3. seperate code to be more flexible
-        4. Remove connect button, and automatically connect when joining a page
-        5. Change URI to be the endpoint Chat/{chatId} from the URI of the chatPage
-    */
-
-
+    const problemId: number = parseInt(params.id as string);
+    const [chatId, setChatId] = useState<number>();
     const [connected, setConnected] = useState(false);
     const stompClient = useRef<Client>(null);
-
-    //const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
-    const [nameInput, setNameInput] = useState('');
-
     const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
-
     const {isAuthenticated, user, token} = useAuth();
-
     const flatListRef = useRef<FlatList<Message>>(null);
 
     useEffect(() => {
@@ -59,19 +41,25 @@ export default function ChatScreen(){
     }
 
     //Initialize client
-    function initiateConnection(){
+    function initiateConnection(chatId: number){
 
         const client = new Client({
             brokerURL: `${socketURL}/chat`,
-            onConnect: () => {
+            connectHeaders:{Authorization: `Bearer ${token}`},
+            onConnect: async () => {
                 client.subscribe(`/topic/messages/${chatId}`, (message) => {
                     receiveMessage(message);
                 });
                 client.subscribe(`/user/queue/errors`, (error) => {
                     console.log(error.body)
-                })
-                fetchMessagesFromChatId(chatId);
-                //client.publish({destination: `/app/chat/${chatId}`, body: JSON.stringify({author: 1, message: 'joined the chat'})});
+                });
+
+                try{
+                    await fetchMessagesFromChatId(chatId);
+                }catch(err){
+                    //Don't do anything for now
+                    console.log(err);
+                }
                 setConnected(true);
             }
         })
@@ -91,7 +79,6 @@ export default function ChatScreen(){
         }
         
         stompClient.current.activate();
-        console.log(stompClient.current);
     }
 
     function disconnect(){
@@ -103,7 +90,7 @@ export default function ChatScreen(){
     }
 
     // Send a message
-    const sendMessage = () => {
+    const sendMessage = async () => {
 
         if(!isAuthenticated || !token){
             return alert("Unable to send messages while not signed in")
@@ -118,33 +105,37 @@ export default function ChatScreen(){
             return;
         }
 
-        console.log(user?.username)
-        console.log(messageInput)
+        const headers: Record<string, string> = {};
+        headers.Authorization = `Bearer ${token}`;
 
         stompClient.current.publish({
             destination: `/app/chat/${chatId}`,
-            body: JSON.stringify({ author: user?.username, message: messageInput })
+            body: JSON.stringify({message: messageInput }),
+            headers: headers
         });
         setMessageInput('');
     };
 
     useEffect(() => {
+
+
         const autoLoadAndConnect = async() => {
-            await initiateConnection();
+            const _chatId: number = await getChatFromProblemId(problemId);
+            await setChatId(_chatId);
+            await initiateConnection(_chatId);
             await connect();
-            await fetchMessagesFromChatId(chatId);
         }
 
         autoLoadAndConnect();
 
-        //Cleanup on leaving the chat page
+        //Cleanup connection on leaving the chat page
         return() => {
             disconnect();
         }
     },[])
 
     const isSendAble = connected && isAuthenticated && token && messageInput!="";
-
+    console.log("connected: " + connected + "\n" + "token:" + token)
 
     return(
         <View>
@@ -154,7 +145,7 @@ export default function ChatScreen(){
                 style={chatStyle.chatView}
                 data={messages}
                 renderItem={({item}) => (
-                    <MessageComponent key={item.id} message={item.message} author={item.author}></MessageComponent>
+                    <MessageComponent id={null} key={item.id} message={item.message} author={item.author} timeStamp={new Date(item.timeStamp).toLocaleString()}></MessageComponent>
                 )}
                 >
             </FlatList>

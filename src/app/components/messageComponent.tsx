@@ -2,9 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { Message } from "../types/Message";
 
 
-export default function MessageComponent({message, author}: Message){
+export default function MessageComponent({id, message, author, timeStamp}: Message){
     return(
         <View style={messageStyle.container}>
+            <Text style={messageStyle.timeStamp}>{(timeStamp ? timeStamp: 'Uknown timestamp')}</Text>
             <View style={messageStyle.bubble}>
                 <Text style={messageStyle.author}>{(author?author: 'unknown')}</Text>
                 <Text>{message}</Text>
@@ -32,5 +33,10 @@ const messageStyle = StyleSheet.create({
     },
     container: {
 
+    },
+    timeStamp: {
+        color: 'gray',
+        fontSize: 12,
+        marginBottom: 5,
     }
 })
