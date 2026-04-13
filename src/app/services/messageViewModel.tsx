@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Message } from "../types/Message";
 
+const baseURL = "http://localhost:8080";
+
 export default function useMessageViewModel(){
 
     const [messages, setMessages] = useState<Message[]>([]);
 
     async function fetchMessagesFromChatId(chatId: Number){
-        const response = await fetch(`http://192.168.1.228:8080/api/message/chat/${chatId}`, {
+        const response = await fetch(`${baseURL}/api/message/chat/${chatId}`, {
             method: 'GET',
-            credentials: 'include'
         })
         const data= await response.json();
         setMessages(data);

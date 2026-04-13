@@ -1,3 +1,4 @@
+import { Feather } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
 import { Pressable, Text } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
@@ -33,8 +34,49 @@ export default function TabsLayout() {
             headerShown: true,
             headerRight: loginButtonHeader,
         }}>
-            <Tabs.Screen name="feed" options={{ title: "ProblemHub" }} />
-            <Tabs.Screen name="chatPage" options={{ title: "Chat" }} />
+            <Tabs.Screen
+                name="feed"
+                options={{
+                    title: "ProblemHub",
+                    tabBarIcon: ({color, focused}) => (
+                        <Feather
+                            name="home"
+                            color={color}
+                            size={16}>    
+                        </Feather>
+                
+                    )
+                 }}
+            />
+            <Tabs.Screen
+                name="UploadProblem"
+                options={{
+                    title: "Create new",
+                    tabBarIcon: ({color, focused}) => (
+                        <Feather
+                            name="plus-circle"
+                            color={color}
+                            size={16}>
+                        </Feather>
+                
+                    )
+                }} 
+            />
+
+            <Tabs.Screen
+                name="MyProblems"
+                options={{
+                    title: "My problems",
+                    tabBarIcon: ({color, focused}) => (
+                        <Feather
+                            name="user"
+                            color={color}
+                            size={16}>
+                        </Feather>
+                
+                    )
+                }} 
+            />
         </Tabs>
     )
 }

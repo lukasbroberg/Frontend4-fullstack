@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import SignInBox from "../components/signInBox";
+import { useAuth } from "../contexts/AuthContext";
 import CategoryService from "../services/categoryService";
 import { createProblem } from "../services/problemService";
 import { Category } from "../types/Category";
@@ -21,10 +23,17 @@ export default function UploadProblemScreen() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category>();
 
+  const {isAuthenticated, user} = useAuth();
+
   async function handleUpload() {
     try {
       if (!title || !description) {
         alert("Titel og beskrivelse skal udfyldes");
+        return;
+      }
+
+      if(!selectedCategory){
+        alert("Choose a category");
         return;
       }
 
@@ -80,6 +89,12 @@ export default function UploadProblemScreen() {
 
   }
 
+  //User is not signed in
+  if(!isAuthenticated){
+    return<SignInBox label="upload a problem"></SignInBox>
+  }
+
+  //User is signed in
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Titel</Text>
