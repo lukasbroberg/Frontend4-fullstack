@@ -62,6 +62,21 @@ export default function TabsLayout() {
                     )
                 }} 
             />
+
+            <Tabs.Screen
+                name="MyProblems"
+                options={{
+                    title: "My problems",
+                    tabBarIcon: ({color, focused}) => (
+                        <Feather
+                            name="user"
+                            color={color}
+                            size={16}>
+                        </Feather>
+                
+                    )
+                }} 
+            />
         </Tabs>
     )
 }
