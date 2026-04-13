@@ -9,7 +9,6 @@ import {
   View,
 } from "react-native";
 import ProblemCard from "../components/ProblemCard";
-import { useAuth } from "../contexts/AuthContext";
 import {
   deleteProblem,
   getProblems,
@@ -21,17 +20,15 @@ import { Problem } from "../types/Problem";
 
 const SORT_OPTIONS: { label: string; value: ProblemSort }[] = [
   { label: "Flest likes", value: "likesdesc" },
-  { label: "Faerrest likes", value: "likesasc" },
+  { label: "Færrest likes", value: "likesasc" },
   { label: "Nyeste", value: "datedesc" },
-  { label: "Aeldste", value: "dateasc" },
+  { label: "Ældste", value: "dateasc" },
 ];
 
 export default function Feed() {
   const [loading, setLoading] = useState(true);
   const [problems, setProblems] = useState<Problem[]>([]);
   const [selectedSort, setSelectedSort] = useState<ProblemSort | undefined>(undefined);
-
-  const { user } = useAuth();
 
   useEffect(() => {
     async function loadProblems() {
@@ -55,14 +52,6 @@ export default function Feed() {
   };
 
   const handleLikeToggle = async (problemId: number) => {
-    const userId = user?.id; 
-
-    if(userId==null){
-      return;
-    }
-
-    console.log(userId)
-
     const problem =problems.find((p) => p.id === problemId);
     if (!problem) return;
 
