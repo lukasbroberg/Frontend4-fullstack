@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MessageComponent from '../components/messageComponent';
 import { useAuth } from '../contexts/AuthContext';
+import { getChatFromProblemId } from '../services/chatService';
 import useMessageViewModel from '../services/messageViewModel';
+import useStompMessageService from '../services/stompMessageService';
 import { Message } from '../types/Message';
 
 
@@ -14,35 +16,19 @@ const baseURL = "http://localhost:8080";
 
 export default function ChatScreen(){
 
-    //blalslas kode til at skaffe url fra siden
-
     const params = useLocalSearchParams();
-    const chatId: number = parseInt(params.id as string);
-
-    console.log(chatId)
-
-    /*  TODO: ~ After User handling and problems are fully functional
-        1. Check whether the user is allowed to view the page or not (signed in?)
-        2. Change author to be the name for the given user
-        3. seperate code to be more flexible
-        4. Remove connect button, and automatically connect when joining a page
-        5. Change URI to be the endpoint Chat/{chatId} from the URI of the chatPage
-    */
-
-
+    const problemId: number = parseInt(params.id as string);
+    const [chatId, setChatId] = useState<number>();
     const [connected, setConnected] = useState(false);
     const stompClient = useRef<Client>(null);
-
-    //const [messages, setMessages] = useState([]);
     const [messageInput, setMessageInput] = useState('');
-    const [nameInput, setNameInput] = useState('');
-
     const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
-
     const {isAuthenticated, user, token} = useAuth();
-
     const flatListRef = useRef<FlatList<Message>>(null);
+    const {initiateConnection, activate, disconnect, publishMessageWithHeaders} = useStompMessageService();
 
+    /** Automatically scroll down upon new incoming messages
+     */
     useEffect(() => {
         if(flatListRef.current && messages.length>0){
             flatListRef.current.scrollToEnd({animated: true})
@@ -50,101 +36,61 @@ export default function ChatScreen(){
     },[messages])
 
     function receiveMessage(message: {body: string}){
-
         const data = JSON.parse(message.body);
-
         const newMessage: Message = data;
-
         setMessages(prevMessages => [...prevMessages, newMessage]);
     }
 
-    //Initialize client
-    function initiateConnection(){
-
-        const client = new Client({
-            brokerURL: `${socketURL}/chat`,
-            onConnect: () => {
-                client.subscribe(`/topic/messages/${chatId}`, (message) => {
-                    receiveMessage(message);
-                });
-                client.subscribe(`/user/queue/errors`, (error) => {
-                    console.log(error.body)
-                })
-                fetchMessagesFromChatId(chatId);
-                //client.publish({destination: `/app/chat/${chatId}`, body: JSON.stringify({author: 1, message: 'joined the chat'})});
-                setConnected(true);
+    function handleSendMessage(){
+        try{
+            var message_req = publishMessageWithHeaders(chatId,messageInput);
+            if(message_req){
+                setMessageInput('');
             }
-        })
-        stompClient.current=client;
-        return;
-    }
-
-    if(stompClient!=null){
-        stompClient.onWebSocketError = (error) => {
-            console.log('error' + error);
+        }catch(err){
+            alert(err)
         }
     }
 
-    function connect(){
-        if(stompClient.current == null){
-            initiateConnection();
-        }
-        
-        stompClient.current.activate();
-        console.log(stompClient.current);
-    }
-
-    function disconnect(){
-        if(!stompClient.current){
-            return;
-        }
-        stompClient.current.deactivate();
-        setConnected(false);
-    }
-
-    // Send a message
-    const sendMessage = () => {
-
-        if(!isAuthenticated || !token){
-            return alert("Unable to send messages while not signed in")
-        }
-
-        if(messageInput==''){
-            return;
-        }
-
-        if (!stompClient.current || !stompClient.current.connected) {
-            console.error("Not connected to WebSocket!");
-            return;
-        }
-
-        console.log(user?.username)
-        console.log(messageInput)
-
-        stompClient.current.publish({
-            destination: `/app/chat/${chatId}`,
-            body: JSON.stringify({ author: user?.username, message: messageInput })
-        });
-        setMessageInput('');
-    };
-
+    /** Automatically fetch messages and initialize STOMP connection on render
+     */
     useEffect(() => {
+
         const autoLoadAndConnect = async() => {
-            await initiateConnection();
-            await connect();
-            await fetchMessagesFromChatId(chatId);
+            //Get chatId
+            const _chatId: number = await getChatFromProblemId(problemId);
+            await setChatId(_chatId);
+
+            //Initiate STOMP handshake
+            await initiateConnection(
+                _chatId,
+                receiveMessage,
+                async () => {
+                    try{
+                        await fetchMessagesFromChatId(_chatId);
+                    }catch(err){
+                        //Don't do anything for now
+                        console.log(err);
+                    }
+                    setConnected(true);
+                }
+            );
+
+            //Activate stomp connection
+            var activate_result = activate();
+            console.log(activate_result)
         }
 
         autoLoadAndConnect();
 
-        //Cleanup on leaving the chat page
+        //Cleanup connection on leaving the chat page
         return() => {
-            disconnect();
+            var disconnectResult = disconnect();
+            setConnected(!disconnectResult);
         }
     },[])
 
     const isSendAble = connected && isAuthenticated && token && messageInput!="";
-
 
     return(
         <View>
@@ -154,7 +100,7 @@ export default function ChatScreen(){
                 style={chatStyle.chatView}
                 data={messages}
                 renderItem={({item}) => (
-                    <MessageComponent key={item.id} message={item.message} author={item.author}></MessageComponent>
+                    <MessageComponent id={null} key={item.id} message={item.message} author={item.author} timeStamp={new Date(item.timeStamp).toLocaleString()}></MessageComponent>
                 )}
                 >
             </FlatList>
@@ -164,7 +110,7 @@ export default function ChatScreen(){
                 </TextInput>
                 <TouchableOpacity
                     style={(!isSendAble? chatStyle.messageSendBtnDisabled: chatStyle.messageSendBtn)}
-                    onPress={sendMessage}
+                    onPress={handleSendMessage}
                     disabled={!isSendAble}>
                     <Feather color={(!isSendAble? 'lightgray': '#5e9cff')} name='send' size={24}></Feather>
                 </TouchableOpacity>

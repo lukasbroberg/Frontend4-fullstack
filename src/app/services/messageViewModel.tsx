@@ -7,11 +7,22 @@ export default function useMessageViewModel(){
 
     const [messages, setMessages] = useState<Message[]>([]);
 
-    async function fetchMessagesFromChatId(chatId: Number){
+    async function fetchMessagesFromChatId(chatId: number | undefined){
+
+        if(chatId == undefined){
+            throw new Error("No given chatId")
+        }
+
         const response = await fetch(`${baseURL}/api/message/chat/${chatId}`, {
             method: 'GET',
         })
-        const data= await response.json();
+
+        if(!response.ok){
+            throw new Error("Unable to get messages");
+        }
+
+        const data = await response.json();
+        console.log(data)
         setMessages(data);
         return data;
     }
