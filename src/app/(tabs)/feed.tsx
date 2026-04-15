@@ -64,6 +64,7 @@ export default function Feed() {
       try {
         setLoading(true);
         const data = await getProblems(selectedSort);
+        console.log(data)
         setProblems(data);
       } catch (error) {
         console.error("Failed to fetch problems:", error);
