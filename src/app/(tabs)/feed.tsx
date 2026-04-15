@@ -150,13 +150,6 @@ export default function Feed() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              style={styles.uploadButton}
-              onPress={() => router.push("/UploadProblem")}
-            >
-              <Text style={styles.uploadButtonText}>+problem</Text>
-            </TouchableOpacity>
-
             <View style={styles.sortContainer}>
               {SORT_OPTIONS.map((option) => {
                 const isSelected = selectedSort === option.value;
