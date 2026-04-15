@@ -13,9 +13,7 @@ export default function ProblemDetail(){
 
     return (
         <ScrollView style={styles.container}>
-
             <Stack.Screen options={{ title: problem.title}} />
-
             <View style={[styles.categoryBadge, {backgroundColor: problem.category ? lighten(problem.category.hexColor) : "lightgray"}]}>
                 <Text style={{color: problem.category ? darken(problem.category.hexColor): 'gray', fontSize: 12}}>
                     {problem.category ? problem.category.name : 'No category'}

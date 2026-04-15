@@ -78,7 +78,6 @@ export default function ChatScreen(){
 
             //Activate stomp connection
             var activate_result = activate();
-            console.log(activate_result)
         }
 
         autoLoadAndConnect();
