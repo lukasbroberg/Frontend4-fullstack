@@ -33,6 +33,22 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
     }
   }
 
+  const getTimeAgo = (DateString: string) => {
+    const now = new Date();
+    const created = new Date(DateString); 
+    const diffMs = now.getTime() - created.getTime();
+
+    const minutes = Math.floor(diffMs/(1000 *60));
+    if (minutes < 1 ) return "Jus now";
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes/60);
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24); 
+    return `${days}d ago`;
+  };
+
   return (
     <TouchableOpacity style={styles.card} onPress={() => router.push({pathname: '/problem/[id]', params: {id: problem.id, data: JSON.stringify(problem) } } as any)}>
       {/* Bekræftelsesdialog (web) */}
@@ -74,7 +90,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
       </Text>
 
       <Text style={styles.date}>
-        {new Date(problem.createdAt).toLocaleDateString()}
+        {problem.username}   {getTimeAgo(problem.createdAt)}
       </Text>
 
        {/* Like button */}
