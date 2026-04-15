@@ -5,6 +5,7 @@ export type Problem = {
   title: string;
   description: string;
   username: string;
+  imageUrl?: string;
   createdAt: string;
   likeCount: number;
   likedByUser: boolean;
