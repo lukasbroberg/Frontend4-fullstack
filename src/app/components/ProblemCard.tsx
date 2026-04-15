@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
@@ -73,6 +73,16 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
         {problem.description}
       </Text>
 
+      {problem.imageUrl ? (
+        <View style={styles.problemImageContainer}>
+          <Image
+            source={{ uri: `http://localhost:8080${problem.imageUrl}` }}
+            style={styles.problemImage}
+            resizeMode="contain"
+          />
+        </View>
+      ) : null}
+
       <Text style={styles.date}>
         {new Date(problem.createdAt).toLocaleDateString()}
       </Text>
@@ -126,6 +136,24 @@ const styles = StyleSheet.create({
   description: {
     marginBottom: 8,
   },
+  problemImage: {
+    width: "100%",
+    height: 220,
+    borderRadius: 8,
+  },
+
+  problemImageContainer: {
+    width: "100%",
+    height: 220,
+    borderRadius: 8,
+    marginTop: 6,
+    marginBottom: 10,
+    overflow: "hidden",
+    backgroundColor: "#f3f4f6",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   seeMore: {
     color: "#01010a",
     fontWeight: "500", 
