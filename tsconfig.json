@@ -4,6 +4,8 @@
     "jsx": "react-native",
     "allowJs": true,
     "strict": true,
+    "jsx": "react-native",
+    "module": "esnext",
     "paths": {
       "@/*": [
         "./*"
