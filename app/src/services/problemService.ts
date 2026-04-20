@@ -1,10 +1,12 @@
+import { API_BASE_URL } from "../config/api";
 import { Problem } from "../types/Problem";
+
 
 // Skift denne URL til din servers IP når backend er klar
 // Android emulator: http://10.0.2.2:8080
 // iOS simulator:    http://localhost:8080
 // Fysisk enhed:     http://<din-computer-ip>:8080
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = API_BASE_URL;
 
 // --- Mock data (bruges indtil login/auth er klar) ---
 const mockProblems: Problem[] = [

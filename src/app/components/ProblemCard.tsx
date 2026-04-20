@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { API_BASE_URL } from "../config/api";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
@@ -92,7 +93,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
       {problem.imageUrl ? (
         <View style={styles.problemImageContainer}>
           <Image
-            source={{ uri: `http://localhost:8080${problem.imageUrl}` }}
+            source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
             style={styles.problemImage}
             resizeMode="contain"
           />
