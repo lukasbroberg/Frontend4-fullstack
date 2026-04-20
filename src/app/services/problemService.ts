@@ -1,8 +1,9 @@
+import { API_BASE_URL } from "../config/api";
 import { Category } from "../types/Category";
 import { Problem } from "../types/Problem";
 import { storageService } from "./storageService";
 
-const API_URL = "http://localhost:8080/problems";
+const API_URL = `${API_BASE_URL}/problems`;
 
 export type ProblemSort = "likesdesc" | "likesasc" | "datedesc" | "dateasc";
 

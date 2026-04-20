@@ -1,6 +1,7 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { API_BASE_URL } from "../../config/api";
 import CategoryService from "../../services/categoryService";
 import { updateProblem } from "../../services/problemService";
 import { Category } from "../../types/Category";
@@ -71,7 +72,7 @@ export default function EditProblem(){
                     <Text style={styles.label}>Nuværende billede</Text>
                     <View style={styles.problemImageContainer}>
                         <Image
-                            source={{ uri: `http://localhost:8080${problem.imageUrl}` }}
+                            source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
                             style={styles.problemImage}
                             resizeMode="contain"
                         />
