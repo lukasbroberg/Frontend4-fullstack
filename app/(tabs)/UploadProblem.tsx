@@ -10,18 +10,30 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+<<<<<<< HEAD:src/app/(tabs)/UploadProblem.tsx
 
 import SignInBox from "../components/signInBox";
 import { useAuth } from "../contexts/AuthContext";
 import CategoryService from "../services/categoryService";
 import { createProblem } from "../services/problemService";
 import { Category } from "../types/Category";
+=======
+import SignInBox from "../../components/signInBox";
+import { useAuth } from "../../contexts/AuthContext";
+import CategoryService from "../../services/categoryService";
+import { createProblem } from "../../services/problemService";
+import { Category } from "../../types/Category";
+>>>>>>> linh-myProblems:app/(tabs)/UploadProblem.tsx
 
 export default function UploadProblemScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+<<<<<<< HEAD:src/app/(tabs)/UploadProblem.tsx
   const { getAllCategories } = CategoryService();
+=======
+  const {getAllCategories} = CategoryService();
+>>>>>>> linh-myProblems:app/(tabs)/UploadProblem.tsx
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
   const [image, setImage] = useState<any>(null);

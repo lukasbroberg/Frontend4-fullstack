@@ -4,7 +4,6 @@
     "jsx": "react-native",
     "allowJs": true,
     "strict": true,
-    "jsx": "react-native",
     "module": "esnext",
     "paths": {
       "@/*": [
@@ -16,7 +15,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "src/app/test_old.tsx.bak", 
-    "src/app/feed_old.tsx.bak"  ]
+    "expo-env.d.ts"
+  ]
 }

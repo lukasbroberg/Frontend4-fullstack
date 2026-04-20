@@ -1,9 +1,8 @@
 import axios from "axios";
-import { API_BASE_URL } from "../config/api";
 import { storageService } from "./storageService";
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "http://localhost:8080",
   timeout: 10000,
 });
 
@@ -18,7 +17,7 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    console.log(config.method?.toUpperCase(), config.baseURL, config.url)
+    console.log(config.method?.toUpperCase(), config.baseURL, config.url);
     return config;
   },
   (error) => Promise.reject(error)

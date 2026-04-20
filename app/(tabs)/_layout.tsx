@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function TabsLayout() {
 

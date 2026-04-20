@@ -1,9 +1,9 @@
 import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ChatScreen from "../screens/chatPage";
-import { darken, lighten } from "../tools/colorTool";
-import { Problem } from "../types/Problem";
+import ChatScreen from "../../screens/chatPage";
+import { darken, lighten } from "../../tools/colorTool";
+import { Problem } from "../../types/Problem";
 
 export default function ProblemDetail(){
     const{data} = useLocalSearchParams();

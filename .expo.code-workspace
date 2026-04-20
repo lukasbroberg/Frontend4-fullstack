@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": ".expo"
+		},
+		{
+			"path": ".vscode"
+		},
+		{
+			"path": "assets"
+		},
+		{
+			"path": "node_modules"
+		},
+		{
+			"path": "src"
+		}
+	]
+}

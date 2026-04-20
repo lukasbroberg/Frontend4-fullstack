@@ -1,11 +1,20 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD:src/app/problem/edit/[id].tsx
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { API_BASE_URL } from "../../config/api";
 import CategoryService from "../../services/categoryService";
 import { updateProblem } from "../../services/problemService";
 import { Category } from "../../types/Category";
 import { Problem } from "../../types/Problem";
+=======
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import CategoryService from "../../../services/categoryService";
+import { updateProblem } from "../../../services/problemService";
+import { Category } from "../../../types/Category";
+import { Problem } from "../../../types/Problem";
+
+>>>>>>> linh-myProblems:app/problem/edit/[id].tsx
 
 export default function EditProblem(){
     const {data} = useLocalSearchParams();
