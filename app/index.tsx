@@ -1,5 +1,6 @@
-import Feed from "./src/screens/feed";
+
+import MyProblems from "./(tabs)/MyProblems";
 
 export default function Index() {
-  return <Feed />;
+  return <MyProblems />;
 }
