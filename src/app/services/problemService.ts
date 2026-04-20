@@ -9,7 +9,6 @@ export type ProblemSort = "likesdesc" | "likesasc" | "datedesc" | "dateasc";
 
 export async function getProblems(sort?: ProblemSort): Promise<Problem[]> {
   const token = await storageService.getToken();
-  console.log("TOKEN sendt til backend:", token);
   const headers: Record<string, string> = {};
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -59,8 +58,6 @@ export async function createProblem(
       } as any);
     }
   }
-  console.log("token in createProblem:", token);
-  console.log("API_URL:", API_URL);
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -108,7 +105,6 @@ export async function unlikeProblem(problemId: number): Promise<void> {
 
 export async function deleteProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
-  console.log("token in deleteProblem:", token);
 
   if (!token) {
     throw new Error("Not logged in");
@@ -123,8 +119,6 @@ export async function deleteProblem(problemId: number): Promise<void> {
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.log("deleteProblem status:", response.status);
-    console.log("deleteProblem body:", errorText);
     throw new Error(`Could not delete problem: ${response.status} - ${errorText}`);
   }
 }

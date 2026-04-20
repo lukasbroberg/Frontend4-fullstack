@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ChatScreen from "../screens/chatPage";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
@@ -12,7 +12,7 @@ export default function ProblemDetail(){
     const router = useRouter();
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <Stack.Screen options={{ title: problem.title}} />
             <View style={[styles.categoryBadge, {backgroundColor: problem.category ? lighten(problem.category.hexColor) : "lightgray"}]}>
                 <Text style={{color: problem.category ? darken(problem.category.hexColor): 'gray', fontSize: 12}}>
@@ -51,7 +51,7 @@ export default function ProblemDetail(){
               </ChatScreen>
             </View>
         
-        </ScrollView>
+        </View>
     );
 }
 

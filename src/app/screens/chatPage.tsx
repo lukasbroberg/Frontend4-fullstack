@@ -10,10 +10,6 @@ import useMessageViewModel from '../services/messageViewModel';
 import useStompMessageService from '../services/stompMessageService';
 import { Message } from '../types/Message';
 
-
-const socketURL = "ws://localhost:8080";
-const baseURL = "http://localhost:8080";
-
 export default function ChatScreen(){
 
     const params = useLocalSearchParams();
@@ -93,8 +89,11 @@ export default function ChatScreen(){
 
     return(
         <View>
-            <Text style={chatStyle.status}>{(isAuthenticated?"":"You need to sign in to send messages")}</Text>
             <FlatList
+                ListHeaderComponent={
+                    <Text style={chatStyle.status}>{(isAuthenticated?"":"You need to sign in to send messages")}</Text>
+                }
+                nestedScrollEnabled={true}
                 ref={flatListRef}
                 style={chatStyle.chatView}
                 data={messages}

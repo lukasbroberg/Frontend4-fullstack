@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { API_BASE_URL } from "../../config/api";
 import CategoryService from "../../services/categoryService";
 import { updateProblem } from "../../services/problemService";
@@ -39,7 +39,7 @@ export default function EditProblem(){
     }
     
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <Stack.Screen options ={{title: "Redigere problem"}}/>
 
             <Text style={styles.label}>Title</Text>
@@ -93,7 +93,7 @@ export default function EditProblem(){
             <Text style={styles.saveText}>Gem ændringer</Text>
             </TouchableOpacity>
 
-        </ScrollView>
+        </View>
     );
 }
 

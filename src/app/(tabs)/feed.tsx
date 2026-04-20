@@ -1,5 +1,4 @@
-﻿import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -64,7 +63,6 @@ export default function Feed() {
       try {
         setLoading(true);
         const data = await getProblems(selectedSort);
-        console.log(data)
         setProblems(data);
       } catch (error) {
         console.error("Failed to fetch problems:", error);
@@ -139,6 +137,7 @@ export default function Feed() {
         renderItem={({ item }) => (
           <ProblemCard problem={item} onLikeToggle={handleLikeToggle} onDelete={handleDelete} />
         )}
+        nestedScrollEnabled={true}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <View ref={dropdownRef} collapsable={false} style={styles.dropdownWrapper}>
