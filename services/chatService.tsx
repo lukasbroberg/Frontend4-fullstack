@@ -1,9 +1,8 @@
-
-const baseURL = "http://localhost:8080";
+import { API_BASE_URL } from "./config/api";
 
 export async function getChatFromProblemId(problemId: number){
 
-    const response = await fetch(`${baseURL}/chat/problem/${problemId}`,{
+    const response = await fetch(`${API_BASE_URL}/chat/problem/${problemId}`,{
         method: 'GET',
     })
 

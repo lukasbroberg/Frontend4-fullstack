@@ -1,8 +1,9 @@
+import { API_BASE_URL } from "./config/api";
 import { Category } from "../types/Category";
 import { Problem } from "../types/Problem";
 import { storageService } from "./storageService";
 
-const API_URL = "http://localhost:8080/problems";
+const API_URL = `${API_BASE_URL}/problems`;
 
 export type ProblemSort = "likesdesc" | "likesasc" | "datedesc" | "dateasc";
 
@@ -23,19 +24,50 @@ export async function getProblems(sort?: ProblemSort): Promise<Problem[]> {
   return response.json();
 }
 
-export async function createProblem(title: string, description: string, category: Category) {
+export async function createProblem(
+  title: string,
+  description: string,
+  category: Category,
+  image?: any
+) {
   const token = await storageService.getToken();
+
+  const formData = new FormData();
+
+  formData.append(
+    "problem",
+    new Blob(
+      [
+        JSON.stringify({
+          title,
+          description,
+          category,
+        }),
+      ],
+      { type: "application/json" }
+    )
+  );
+
+  if (image) {
+    if (image.file) {
+      formData.append("image", image.file);
+    } else {
+      formData.append("image", {
+        uri: image.uri,
+        name: image.fileName ?? "problem.jpg",
+        type: image.mimeType ?? "image/jpeg",
+      } as any);
+    }
+  }
+  console.log("token in createProblem:", token);
+  console.log("API_URL:", API_URL);
+
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({
-      title,
-      description,
-      category
-    }),
+    body: formData,
   });
 
   if (!response.ok) {
@@ -76,9 +108,12 @@ export async function unlikeProblem(problemId: number): Promise<void> {
 
 export async function deleteProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
+  console.log("token in deleteProblem:", token);
+
   if (!token) {
     throw new Error("Not logged in");
   }
+
   const response = await fetch(`${API_URL}/${problemId}`, {
     method: "DELETE",
     headers: {
@@ -87,7 +122,10 @@ export async function deleteProblem(problemId: number): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error(`Could not delete problem: ${response.status}`);
+    const errorText = await response.text();
+    console.log("deleteProblem status:", response.status);
+    console.log("deleteProblem body:", errorText);
+    throw new Error(`Could not delete problem: ${response.status} - ${errorText}`);
   }
 }
 
@@ -113,6 +151,7 @@ export async function updateProblem(id: number, title: string, description: stri
 /* create function get Http://localhost:8080/problems/my*/
 export async function getMyProblems() {
   const token = await storageService.getToken();
+  console.log("TOKEN in getMyProblems:", token);
 
   if (!token) {
     throw new Error("Not logged in");
@@ -123,6 +162,8 @@ export async function getMyProblems() {
       Authorization: `Bearer ${token}`,
     },
   });
+
+  console.log("STATUS /my:", response.status);
 
   if (!response.ok) {
     throw new Error(`Could not fetch my problems: ${response.status}`);

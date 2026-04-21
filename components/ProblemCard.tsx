@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { API_BASE_URL } from "../services/config/api";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
@@ -32,6 +33,22 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
       );
     }
   }
+
+  const getTimeAgo = (DateString: string) => {
+    const now = new Date();
+    const created = new Date(DateString); 
+    const diffMs = now.getTime() - created.getTime();
+
+    const minutes = Math.floor(diffMs/(1000 *60));
+    if (minutes < 1 ) return "Jus now";
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes/60);
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24); 
+    return `${days}d ago`;
+  };
 
   return (
     <TouchableOpacity style={styles.card} onPress={() => router.push({pathname: '/problem/[id]', params: {id: problem.id, data: JSON.stringify(problem) } } as any)}>
@@ -73,8 +90,18 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
         {problem.description}
       </Text>
 
+      {problem.imageUrl ? (
+        <View style={styles.problemImageContainer}>
+          <Image
+            source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
+            style={styles.problemImage}
+            resizeMode="contain"
+          />
+        </View>
+      ) : null}
+
       <Text style={styles.date}>
-        {new Date(problem.createdAt).toLocaleDateString()}
+        {problem.username}   {getTimeAgo(problem.createdAt)}
       </Text>
 
        {/* Like button */}
@@ -126,6 +153,24 @@ const styles = StyleSheet.create({
   description: {
     marginBottom: 8,
   },
+  problemImage: {
+    width: "100%",
+    height: 220,
+    borderRadius: 8,
+  },
+
+  problemImageContainer: {
+    width: "100%",
+    height: 220,
+    borderRadius: 8,
+    marginTop: 6,
+    marginBottom: 10,
+    overflow: "hidden",
+    backgroundColor: "#f3f4f6",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   seeMore: {
     color: "#01010a",
     fontWeight: "500", 

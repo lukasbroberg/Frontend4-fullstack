@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ChatScreen from "../../screens/chatPage";
 import { darken, lighten } from "../../tools/colorTool";
 import { Problem } from "../../types/Problem";
@@ -21,6 +21,16 @@ export default function ProblemDetail(){
             </View>
 
             <Text style={styles.description}>{problem.description}</Text>
+
+            {problem.imageUrl ? (
+                <View style={styles.problemImageContainer}>
+                    <Image
+                        source={{ uri: `http://localhost:8080${problem.imageUrl}` }}
+                        style={styles.problemImage}
+                        resizeMode="contain"
+                    />
+                </View>
+            ) : null}
 
             <Text style={styles.date}>{new Date(problem.createdAt).toLocaleDateString()}</Text>
 
@@ -64,6 +74,23 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 16,
   },
+
+  problemImageContainer: {
+    width: '100%',
+    height: 240,
+    borderRadius: 10,
+    marginBottom: 16,
+    overflow: 'hidden',
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  problemImage: {
+    width: '100%',
+    height: '100%',
+  },
+
+
   date: {
     fontSize: 12,
     color: 'gray',

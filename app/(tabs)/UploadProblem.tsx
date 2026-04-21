@@ -1,14 +1,16 @@
+import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  Button,
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+
 import SignInBox from "../../components/signInBox";
 import { useAuth } from "../../contexts/AuthContext";
 import CategoryService from "../../services/categoryService";
@@ -19,82 +21,117 @@ export default function UploadProblemScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const {getAllCategories} = CategoryService();
+  const { getAllCategories } = CategoryService();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category>();
+  const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
+  const [image, setImage] = useState<any>(null);
 
-  const {isAuthenticated, user} = useAuth();
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      const fetchedCategories = await getAllCategories();
+      setCategories(fetchedCategories);
+    };
+
+    fetchData();
+  }, []);
 
   async function handleUpload() {
     try {
+      console.log("handleUpload started");
+
       if (!title || !description) {
         alert("Titel og beskrivelse skal udfyldes");
         return;
       }
 
-      if(!selectedCategory){
+      if (!selectedCategory) {
         alert("Choose a category");
         return;
       }
-
-      await createProblem(title, description, selectedCategory);
+      
+      console.log("selected image", image);
+      console.log("before createProblem");
+      const result = await createProblem(title, description, selectedCategory, image);
+      console.log("after createProblem", result);
 
       setTitle("");
       setDescription("");
+      setSelectedCategory(undefined);
+      setImage(null);
       alert("Problem uploaded");
 
-      router.replace("/");
+      console.log("before router.replace");
+      router.replace("../(tabs)");
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Upload failed. Check that backend runs on localhost:8080 and that /problems is open in SecurityConfig.");
+      alert("Upload failed");
     }
   }
 
-  useEffect( () => {
-    const fetchData = async(): Promise<void> => {
-      const categories = await getAllCategories();
-      setCategories(categories);
-    }
-    fetchData();
-    
-  },[])
-
-
-  function DropdownMenu(){
-    if(!dropdownOpen){
-      return(
+  function DropdownMenu() {
+    if (!dropdownOpen) {
+      return (
         <View>
-          <TouchableOpacity onPress={() => {dropdownOpen?setDropdownOpen(false): setDropdownOpen(true)}} style={[styles.input, {backgroundColor: selectedCategory?.hexColor}]}>
-            <Text>{(selectedCategory?.name==null ?"Choose category": selectedCategory?.name)}</Text>
+          <TouchableOpacity
+            onPress={() => setDropdownOpen(true)}
+            style={[
+              styles.input,
+              selectedCategory ? { backgroundColor: selectedCategory.hexColor } : null,
+            ]}
+          >
+            <Text>
+              {selectedCategory?.name == null ? "Choose category" : selectedCategory.name}
+            </Text>
           </TouchableOpacity>
         </View>
-      )
+      );
     }
-    
-    return(
+
+    return (
       <View>
-        <FlatList data={categories}
-                  renderItem={({item}) => (
-                    <TouchableOpacity style={[styles.input, {backgroundColor: item.hexColor}]} onPress={() => {
-                        dropdownOpen?setDropdownOpen(false): setDropdownOpen(true);
-                        setSelectedCategory(item);
-                        }}>
-                      <Text>{item.name}</Text>
-                    </TouchableOpacity>
-                  )}>
-        </FlatList>
-
+        <FlatList
+          data={categories}
+          keyExtractor={(item, index) => `${item.name}-${index}`}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[styles.input, { backgroundColor: item.hexColor }]}
+              onPress={() => {
+                setDropdownOpen(false);
+                setSelectedCategory(item);
+              }}
+            >
+              <Text>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
       </View>
-    )
-
+    );
   }
 
-  //User is not signed in
-  if(!isAuthenticated){
-    return<SignInBox label="upload a problem"></SignInBox>
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      alert("Du skal give adgang til billeder for at uploade et billede.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0]);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return <SignInBox label="upload a problem" />;
   }
 
-  //User is signed in
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Titel</Text>
@@ -104,7 +141,7 @@ export default function UploadProblemScreen() {
         onChangeText={setTitle}
         placeholder="Indtast titel"
       />
-      
+
       <Text style={styles.label}>Category</Text>
       <View>
         <DropdownMenu />
@@ -119,7 +156,23 @@ export default function UploadProblemScreen() {
         multiline
       />
 
-      <Button title="Upload problem" onPress={handleUpload} />
+      <Text style={styles.label}>Billede</Text>
+      <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+        <Text>{image ? "Vælg et andet billede" : "Vælg billede"}</Text>
+      </TouchableOpacity>
+
+      {image ? (
+        <>
+          <Image source={{ uri: image.uri }} style={styles.previewImage} />
+          <TouchableOpacity style={styles.removeImageButton} onPress={() => setImage(null)}>
+            <Text style={styles.removeImageButtonText}>Fjern billede</Text>
+          </TouchableOpacity>
+        </>
+      ) : null}
+
+      <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+        <Text style={styles.uploadButtonText}>Upload problem</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -141,5 +194,41 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
+  },
+  imagePickerButton: {
+    marginTop: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+  },
+  previewImage: {
+    width: "100%",
+    height: 220,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  removeImageButton: {
+    backgroundColor: '#ef4444',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  removeImageButtonText: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  uploadButton: {
+    backgroundColor: "#007AFF",
+    borderRadius: 8,
+    padding: 12,
+    alignItems: "center",
+  },
+  uploadButtonText: {
+    color: "white",
+    fontWeight: "600",
   },
 });

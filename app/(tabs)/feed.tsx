@@ -64,6 +64,7 @@ export default function Feed() {
       try {
         setLoading(true);
         const data = await getProblems(selectedSort);
+        console.log(data)
         setProblems(data);
       } catch (error) {
         console.error("Failed to fetch problems:", error);
@@ -148,13 +149,6 @@ export default function Feed() {
                 <Text style={styles.dropdownArrow}>{dropdownOpen ? "▲" : "▼"}</Text>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={styles.uploadButton}
-              onPress={() => router.push("/UploadProblem")}
-            >
-              <Text style={styles.uploadButtonText}>+problem</Text>
-            </TouchableOpacity>
 
             <View style={styles.sortContainer}>
               {SORT_OPTIONS.map((option) => {

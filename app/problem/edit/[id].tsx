@@ -1,12 +1,18 @@
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { 
+    Image, 
+    ScrollView, 
+    StyleSheet, 
+    Text, TextInput, 
+    TouchableOpacity, 
+    View 
+} from "react-native";
 import CategoryService from "../../../services/categoryService";
 import { updateProblem } from "../../../services/problemService";
 import { Category } from "../../../types/Category";
 import { Problem } from "../../../types/Problem";
-
-
+//import { API_BASE_URL } from "../../../services/apiClient";
 export default function EditProblem(){
     const {data} = useLocalSearchParams();
     const router = useRouter();
@@ -67,6 +73,21 @@ export default function EditProblem(){
                 </TouchableOpacity>
             ))}
 
+            {problem.imageUrl ? (
+                <>
+                    <Text style={styles.label}>Nuværende billede</Text>
+                    <View style={styles.problemImageContainer}>
+                        <Image
+                        
+                            source={{ uri: `http://localhost:8080${problem.imageUrl}` }}
+                            style={styles.problemImage}
+                            resizeMode="contain"
+                        />
+                    </View>
+                </>
+            ) : null}
+
+
             <Text style={styles.label}>Beskrivelse</Text>
             <TextInput
             style={[styles.input, styles.textArea]}
@@ -104,6 +125,21 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 150,
+  },
+  problemImageContainer: {
+    width: '100%',
+    height: 220,
+    borderRadius: 10,
+    marginTop: 8,
+    marginBottom: 8,
+    overflow: 'hidden',
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  problemImage: {
+    width: '100%',
+    height: '100%',
   },
   saveButton: {
     backgroundColor: '#4CAF50',
