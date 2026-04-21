@@ -1,6 +1,12 @@
-
-import MyProblems from "./(tabs)/MyProblems";
+import { Redirect } from "expo-router";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Index() {
-  return <MyProblems />;
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) return null;
+
+  return (
+    <Redirect href={isAuthenticated ? "/(tabs)/feed" : "/(auth)/login"} />
+  );
 }

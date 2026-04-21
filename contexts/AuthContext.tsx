@@ -51,6 +51,7 @@ export default function AuthProvider({
   const login = async (data: LoginRequest): Promise<AuthResponse> => {
     const response = await authService.login(data);
     console.log("LOGIN RESPONSE:", response);
+    console.log("TOKEN:", response?.token);
 
     setUser(response.user);
     setToken(response.token);

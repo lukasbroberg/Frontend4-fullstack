@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../config/api";
+import { API_BASE_URL } from "./config/api";
 import { Category } from "../types/Category";
 import { Problem } from "../types/Problem";
 import { storageService } from "./storageService";
@@ -151,6 +151,7 @@ export async function updateProblem(id: number, title: string, description: stri
 /* create function get Http://localhost:8080/problems/my*/
 export async function getMyProblems() {
   const token = await storageService.getToken();
+  console.log("TOKEN in getMyProblems:", token);
 
   if (!token) {
     throw new Error("Not logged in");
@@ -161,6 +162,8 @@ export async function getMyProblems() {
       Authorization: `Bearer ${token}`,
     },
   });
+
+  console.log("STATUS /my:", response.status);
 
   if (!response.ok) {
     throw new Error(`Could not fetch my problems: ${response.status}`);

@@ -19,6 +19,47 @@ export default function LoginScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogin = async () => {
+  if (!username.trim() || !password.trim()) {
+    Alert.alert("Fejl", "Udfyld brugernavn og adgangskode");
+    return;
+  }
+
+  try {
+    setIsSubmitting(true);
+    console.log("STEP 1: before login");
+
+    const result = await login({
+      username: username.trim(),
+      password: password.trim(),
+    });
+
+    console.log("STEP 2: login success", result);
+    console.log("STEP 3: before router.replace");
+
+    router.replace("/feed" as any);
+
+    console.log("STEP 4: after router.replace");
+  } catch (error: any) {
+    console.log(
+      "LOGIN SCREEN ERROR:",
+      error?.response?.data || error?.message || error
+    );
+
+    const message =
+      typeof error?.response?.data === "string"
+        ? error.response.data
+        : error?.response?.data?.message ||
+          error?.response?.data?.error ||
+          error?.message ||
+          "Login mislykkedes";
+
+    Alert.alert("Login mislykkedes", message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+  /*const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert("Fejl", "Udfyld brugernavn og adgangskode");
       return;
@@ -34,7 +75,7 @@ export default function LoginScreen() {
 
       console.log("LOGIN SCREEN OK:", result);
 
-      router.replace("/(tabs)/feed");
+      router.replace("/feed" as any);
     } catch (error: any) {
       console.log(
         "LOGIN SCREEN ERROR:",
@@ -53,7 +94,7 @@ export default function LoginScreen() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  };*/
 
   return (
     <View style={styles.container}>
@@ -92,7 +133,7 @@ export default function LoginScreen() {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/register")}> 
+      <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/register" as any)}> 
         <Text style={styles.secondaryCtaText}>Ny her? Opret en konto</Text>
       </TouchableOpacity>
     </View>

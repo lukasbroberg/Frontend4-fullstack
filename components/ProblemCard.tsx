@@ -2,7 +2,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { API_BASE_URL } from "../config/api";
+import { API_BASE_URL } from "../services/config/api";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
