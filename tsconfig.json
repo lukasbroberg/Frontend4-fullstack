@@ -1,8 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "jsx": "react-native",
-    "allowJs": true,
     "strict": true,
     "jsx": "react-native",
     "module": "esnext",
@@ -17,5 +15,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/app/test_old.tsx.bak", "app/app/feed_old.tsx.bak"  ]
+  ]
 }
