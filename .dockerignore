@@ -1,0 +1,9 @@
+node_modules
+npm-debug.log
+.git
+.github
+.vscode
+.expo
+.web-build
+dist
+README.md
