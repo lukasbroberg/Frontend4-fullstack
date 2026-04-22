@@ -1,13 +1,25 @@
-import { Client } from "@stomp/stompjs";
+import { RxStomp, RxStompConfig } from '@stomp/rx-stomp';
 import { useRef } from "react";
+import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../contexts/AuthContext";
 
-const socketURL = "ws://localhost:8080";
+const socketURL = API_BASE_URL.replace("http","ws")
 
 export default function useStompMessageService(){
 
-    const stompClient = useRef<Client>(null);
+    const rxStompRef = useRef(new RxStomp());
+    const rxStomp = rxStompRef.current;
     const {isAuthenticated, user, token} = useAuth();
+
+    const rxStompConfig: RxStompConfig = {
+        brokerURL: `${socketURL}/chat`,
+        connectHeaders: {Authorization: `Bearer ${token}`},
+        //debug: (str) => console.log("Stomp debug", str),
+        forceBinaryWSFrames: true, //IMportant for Iphone and android web sockets!!!
+        heartbeatIncoming: 0,
+        heartbeatOutgoing: 10000,
+        reconnectDelay: 2000,
+    }
 
     /** Initializes handshake between the server and client
      *  onConnect: when the handshake is established
@@ -21,33 +33,31 @@ export default function useStompMessageService(){
         onReceivedMessages: (message: {body: string}) => void,
         onConnected: () => {})
     {
-        const client = new Client({
-            brokerURL: `${socketURL}/chat`,
-            connectHeaders:{Authorization: `Bearer ${token}`},
-            onConnect: async () => {
-                client.subscribe(`/topic/messages/${chatId}`, (message) => {
-                    onReceivedMessages(message);
-                });
-                client.subscribe(`/user/queue/errors`, (error) => {
-                    console.log(error.body)
-                });
-                onConnected();
-            }
+        rxStomp.configure(rxStompConfig)
+
+        rxStomp.connected$.subscribe(() => {
+            rxStomp.watch(`/topic/messages/${chatId}`).subscribe((message) => {
+                onReceivedMessages(message);
+            });
+            rxStomp.watch(`/user/queue/errors`).subscribe((error) => {
+                console.log(error.body);
+            });
+            onConnected();
         })
-        stompClient.current=client;
-        return;
     }
+
+
 
     /** Activates the connection
      * 
      * @returns false if unable to activate, true if activated
      */
     function activate(){
-        if(stompClient.current == null){
+        if(rxStomp == null){
             return false
         }
         
-        stompClient.current.activate();
+        rxStomp.activate();
         return true;
     }
 
@@ -56,10 +66,10 @@ export default function useStompMessageService(){
      * @returns false if unable to deactive, true if deactivation was succesfull
      */
     function disconnect(){
-        if(!stompClient.current){
+        if(!rxStomp){
             return false;
         }
-        stompClient.current.deactivate();
+        rxStomp.deactivate();
         return true;
     }
 
@@ -73,11 +83,11 @@ export default function useStompMessageService(){
         chatId: number | undefined,
         message: string,
     ){
-        if(!stompClient.current){
+        if(!rxStomp){
             throw new Error("Missing stomp client")
         }
 
-        if(!stompClient.current.active){
+        if(!rxStomp.active){
             throw new Error("Current connection is not active")
         }
 
@@ -96,7 +106,7 @@ export default function useStompMessageService(){
         const headers: Record<string, string> = {};
         headers.Authorization = `Bearer ${token}`;
 
-        stompClient.current.publish({
+        rxStomp.publish({
             destination: `/app/chat/${chatId}`,
             body: JSON.stringify({message: message}),
             headers: headers
@@ -105,7 +115,7 @@ export default function useStompMessageService(){
     }
 
     function getClient(){
-        return stompClient;
+        return rxStomp;
     }
 
     return {

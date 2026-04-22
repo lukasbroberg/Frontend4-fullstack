@@ -10,7 +10,7 @@ export default function ProblemDetail(){
 
     const problem: Problem = JSON.parse(data as string);
     const router = useRouter();
-
+    
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: problem.title}} />

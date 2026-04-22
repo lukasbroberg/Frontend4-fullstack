@@ -1,5 +1,4 @@
 import Feather from '@expo/vector-icons/Feather';
-import { Client } from '@stomp/stompjs';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -10,22 +9,25 @@ import useMessageViewModel from '../services/messageViewModel';
 import useStompMessageService from '../services/stompMessageService';
 import { Message } from '../types/Message';
 
+
+
 export default function ChatScreen(){
 
     const params = useLocalSearchParams();
     const problemId: number = parseInt(params.id as string);
     const [chatId, setChatId] = useState<number>();
     const [connected, setConnected] = useState(false);
-    const stompClient = useRef<Client>(null);
     const [messageInput, setMessageInput] = useState('');
     const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
     const {isAuthenticated, user, token} = useAuth();
     const flatListRef = useRef<FlatList<Message>>(null);
     const {initiateConnection, activate, disconnect, publishMessageWithHeaders} = useStompMessageService();
 
+
     /** Automatically scroll down upon new incoming messages
      */
     useEffect(() => {
+
         if(flatListRef.current && messages.length>0){
             flatListRef.current.scrollToEnd({animated: true})
         }
@@ -38,6 +40,7 @@ export default function ChatScreen(){
     }
 
     function handleSendMessage(){
+
         try{
             var message_req = publishMessageWithHeaders(chatId,messageInput);
             if(message_req){
@@ -53,6 +56,7 @@ export default function ChatScreen(){
     useEffect(() => {
 
         const autoLoadAndConnect = async() => {
+
             //Get chatId
             const _chatId: number = await getChatFromProblemId(problemId);
             await setChatId(_chatId);
@@ -71,9 +75,7 @@ export default function ChatScreen(){
                     setConnected(true);
                 }
             );
-
-            //Activate stomp connection
-            var activate_result = activate();
+            await activate();
         }
 
         autoLoadAndConnect();
@@ -83,16 +85,14 @@ export default function ChatScreen(){
             var disconnectResult = disconnect();
             setConnected(!disconnectResult);
         }
-    },[])
+    },[problemId])
 
     const isSendAble = connected && isAuthenticated && token && messageInput!="";
 
     return(
         <View>
+            <Text style={chatStyle.status}>{(isAuthenticated?"":"You need to sign in to send messages")}</Text>
             <FlatList
-                ListHeaderComponent={
-                    <Text style={chatStyle.status}>{(isAuthenticated?"":"You need to sign in to send messages")}</Text>
-                }
                 nestedScrollEnabled={true}
                 ref={flatListRef}
                 style={chatStyle.chatView}

@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { API_BASE_URL } from "../config/api";
 import { Message } from "../types/Message";
 
-const baseURL = "http://localhost:8080";
+const baseURL = API_BASE_URL;
 
 export default function useMessageViewModel(){
 
@@ -22,9 +23,18 @@ export default function useMessageViewModel(){
         }
 
         const data = await response.json();
-        console.log(data)
-        setMessages(data);
-        return data;
+        
+        var filteredData: Message[] = [];
+
+        for(var i=0; i<data.length; i++){
+            if(data[i]==null){
+                continue;
+            }
+            filteredData.push(data[i])
+        }
+
+        setMessages(filteredData);
+        return filteredData;
     }
 
     return{
