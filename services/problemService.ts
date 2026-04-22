@@ -1,6 +1,6 @@
-import { API_BASE_URL } from "./config/api";
 import { Category } from "../types/Category";
 import { Problem } from "../types/Problem";
+import { API_BASE_URL } from "./config/api";
 import { storageService } from "./storageService";
 
 const API_URL = `${API_BASE_URL}/problems`;
@@ -148,7 +148,6 @@ export async function updateProblem(id: number, title: string, description: stri
     throw new Error(`Could not update problem: ${response.status}`);
   }
 }
-/* create function get Http://localhost:8080/problems/my*/
 export async function getMyProblems() {
   const token = await storageService.getToken();
   console.log("TOKEN in getMyProblems:", token);
@@ -157,7 +156,10 @@ export async function getMyProblems() {
     throw new Error("Not logged in");
   }
 
-  const response = await fetch(`${API_URL}/my`, {
+  const url = `${API_URL}/my`;
+  console.log("URL /my:", url);
+
+  const response = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -165,9 +167,12 @@ export async function getMyProblems() {
 
   console.log("STATUS /my:", response.status);
 
+  const text = await response.text();
+  console.log("BODY /my:", text);
+
   if (!response.ok) {
     throw new Error(`Could not fetch my problems: ${response.status}`);
   }
 
-  return response.json();
+  return text ? JSON.parse(text) : [];
 }
