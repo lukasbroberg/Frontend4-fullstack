@@ -9,11 +9,12 @@ export type ProblemSort = "likesdesc" | "likesasc" | "datedesc" | "dateasc";
 
 export async function getProblems(sort?: ProblemSort): Promise<Problem[]> {
   const token = await storageService.getToken();
-  console.log("TOKEN sendt til backend:", token);
   const headers: Record<string, string> = {};
+
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
+
   const url = sort ? `${API_URL}?sort=${encodeURIComponent(sort)}` : API_URL;
   const response = await fetch(url, { headers });
 
@@ -59,8 +60,6 @@ export async function createProblem(
       } as any);
     }
   }
-  console.log("token in createProblem:", token);
-  console.log("API_URL:", API_URL);
 
   const response = await fetch(API_URL, {
     method: "POST",
@@ -77,26 +76,28 @@ export async function createProblem(
   return response.json();
 }
 
-export async function likeProblem (problemId: number): Promise<void> {
+export async function likeProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
-  const response = await fetch (`${API_URL}/${problemId}/like`, {
+
+  const response = await fetch(`${API_URL}/${problemId}/like`, {
     method: "POST",
     headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}), //
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 
   if (!response.ok) {
-    throw new Error(`Could not like problem: ${response.status}`); 
+    throw new Error(`Could not like problem: ${response.status}`);
   }
 }
 
 export async function unlikeProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
-  const response = await fetch(`${API_URL}/${problemId}/like`,{
-    method: "DELETE", 
+
+  const response = await fetch(`${API_URL}/${problemId}/like`, {
+    method: "DELETE",
     headers: {
-      ...(token ? { Authorization: `Bearer ${token}`} : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
 
@@ -105,10 +106,8 @@ export async function unlikeProblem(problemId: number): Promise<void> {
   }
 }
 
-
 export async function deleteProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
-  console.log("token in deleteProblem:", token);
 
   if (!token) {
     throw new Error("Not logged in");
@@ -122,53 +121,50 @@ export async function deleteProblem(problemId: number): Promise<void> {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.log("deleteProblem status:", response.status);
-    console.log("deleteProblem body:", errorText);
-    throw new Error(`Could not delete problem: ${response.status} - ${errorText}`);
+    throw new Error(`Could not delete problem: ${response.status}`);
   }
 }
 
-export async function updateProblem(id: number, title: string, description: string, category: Category) {
+export async function updateProblem(
+  id: number,
+  title: string,
+  description: string,
+  category: Category
+) {
   const token = await storageService.getToken();
-  if (!token){
-    throw new Error ("Not logged in");
+
+  if (!token) {
+    throw new Error("Not logged in");
   }
 
-  const response = await fetch(`${API_URL}/${id}`,{
+  const response = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({title, description, category}),
+    body: JSON.stringify({ title, description, category }),
   });
 
   if (!response.ok) {
     throw new Error(`Could not update problem: ${response.status}`);
   }
 }
+
 export async function getMyProblems() {
   const token = await storageService.getToken();
-  console.log("TOKEN in getMyProblems:", token);
 
   if (!token) {
     throw new Error("Not logged in");
   }
 
-  const url = `${API_URL}/my`;
-  console.log("URL /my:", url);
-
-  const response = await fetch(url, {
+  const response = await fetch(`${API_URL}/my`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  console.log("STATUS /my:", response.status);
-
   const text = await response.text();
-  console.log("BODY /my:", text);
 
   if (!response.ok) {
     throw new Error(`Could not fetch my problems: ${response.status}`);
