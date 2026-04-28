@@ -58,24 +58,29 @@ export default function ChatScreen(){
         const autoLoadAndConnect = async() => {
 
             //Get chatId
-            const _chatId: number = await getChatFromProblemId(problemId);
-            await setChatId(_chatId);
-
-            //Initiate STOMP handshake
-            await initiateConnection(
-                _chatId,
-                receiveMessage,
-                async () => {
-                    try{
-                        await fetchMessagesFromChatId(_chatId);
-                    }catch(err){
-                        //Don't do anything for now
-                        console.log(err);
+            try{
+                const _chatId: number = await getChatFromProblemId(problemId);
+                await setChatId(_chatId);
+                
+                //Initiate STOMP handshake
+                await initiateConnection(
+                    _chatId,
+                    receiveMessage,
+                    async () => {
+                        try{
+                            await fetchMessagesFromChatId(_chatId);
+                        }catch(err){
+                            //Don't do anything for now
+                            console.log(err);
+                        }
+                        setConnected(true);
                     }
-                    setConnected(true);
-                }
-            );
-            await activate();
+                );
+                await activate();
+            }catch(error){
+                console.log(error);
+            }
+
         }
 
         autoLoadAndConnect();
