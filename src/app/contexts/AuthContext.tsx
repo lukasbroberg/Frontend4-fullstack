@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { authService } from "../services/authService";
 import { storageService } from "../services/storageService";
+import { userService } from "../services/userService";
 import type {
   AuthResponse,
   LoginRequest,
@@ -35,9 +36,8 @@ export default function AuthProvider({
           if (savedToken) {
             setToken(savedToken);
 
-            // Nếu backend có endpoint /user/me thì nên gọi ở đây
-            // const currentUser = await authService.getMe();
-            // setUser(currentUser);
+            const currentUser = await userService.getMe();
+            setUser(currentUser);
           }
         } catch (error) {
           console.log("LOAD AUTH ERROR:", error);

@@ -63,7 +63,14 @@ export default function Feed() {
       try {
         setLoading(true);
         const data = await getProblems(selectedSort);
-        setProblems(data);
+        const normalizedProblem = data.map((problem) => ({
+          ...problem, 
+          username:
+            problem.username??
+            (problem.createdByCurrentUser ? user?.username ?? null : null),
+        }));
+
+        setProblems(normalizedProblem);
       } catch (error) {
         console.error("Failed to fetch problems:", error);
       } finally {
@@ -71,7 +78,7 @@ export default function Feed() {
       }
     }
     loadProblems();
-  }, [selectedSort]);
+  }, [selectedSort, user?.username]);
 
   const handleSortPress = (sortValue: ProblemSort) => {
     setSelectedSort((prev) => (prev === sortValue ? undefined : sortValue));

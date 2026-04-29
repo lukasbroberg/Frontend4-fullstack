@@ -116,9 +116,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
         <MaterialCommunityIcons name="thumb-up-outline" size={22} color="black" />
         )}
         
-        {problem.likedByUser && (
           <Text style={styles.likeCount}>{problem.likeCount}</Text>
-        )}
           </TouchableOpacity>
           
           {/* Delete button - kun synlig for ejeren */}
