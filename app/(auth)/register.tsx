@@ -1,19 +1,23 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function RegisterScreen() {
   const { register, login } = useAuth();
 
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,12 +32,11 @@ export default function RegisterScreen() {
     try {
       setLoading(true);
 
-      const response = await register({
+      await register({
         username: username.trim(),
         email: email.trim(),
         password: password.trim(),
       });
-      console.log(register);
 
       await login({
         username: username.trim(),
@@ -57,63 +60,87 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Opret konto</Text>
-      <Text style={styles.subtitle}>Byg din profil og del dine bedste problem-loesninger.</Text>
-
-      <Text style={styles.label}>Brugernavn</Text>
-      <TextInput
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Vaelg et brugernavn"
-        placeholderTextColor="#7c8798"
-        style={styles.input}
-      />
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        placeholder="din@email.dk"
-        placeholderTextColor="#7c8798"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        style={styles.input}
-      />
-
-      <Text style={styles.label}>Adgangskode</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        placeholder="Vaelg en sikker kode"
-        placeholderTextColor="#7c8798"
-        style={styles.input}
-      />
-
-      <TouchableOpacity
-        onPress={handleRegister}
-        disabled={loading}
-        style={[styles.button, loading && styles.buttonDisabled]}
+    <KeyboardAvoidingView
+      style={styles.flex}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
       >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Opret konto</Text>
-        )}
-      </TouchableOpacity>
+        <Text style={styles.title}>Opret konto</Text>
+        <Text style={styles.subtitle}>Byg din profil og del dine bedste problem-loesninger.</Text>
 
-      <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/login")}>
-        <Text style={styles.secondaryCtaText}>Har du allerede en konto? Log ind</Text>
-      </TouchableOpacity>
-    </View>
+        <Text style={styles.label}>Brugernavn</Text>
+        <TextInput
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Vaelg et brugernavn"
+          placeholderTextColor="#7c8798"
+          returnKeyType="next"
+          onSubmitEditing={() => emailRef.current?.focus()}
+          blurOnSubmit={false}
+          autoCapitalize="none"
+          style={styles.input}
+        />
+
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          ref={emailRef}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="din@email.dk"
+          placeholderTextColor="#7c8798"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordRef.current?.focus()}
+          blurOnSubmit={false}
+          style={styles.input}
+        />
+
+        <Text style={styles.label}>Adgangskode</Text>
+        <TextInput
+          ref={passwordRef}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          placeholder="Vaelg en sikker kode"
+          placeholderTextColor="#7c8798"
+          returnKeyType="done"
+          onSubmitEditing={handleRegister}
+          style={styles.input}
+        />
+
+        <TouchableOpacity
+          onPress={handleRegister}
+          disabled={loading}
+          style={[styles.button, loading && styles.buttonDisabled]}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Opret konto</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/login")}>
+          <Text style={styles.secondaryCtaText}>Har du allerede en konto? Log ind</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  flex: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#f8fafc",
+  },
+  container: {
+    flexGrow: 1,
     padding: 24,
     backgroundColor: "#f8fafc",
   },

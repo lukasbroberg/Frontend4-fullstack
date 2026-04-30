@@ -1,19 +1,22 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginScreen() {
   const { login } = useAuth();
 
+  const passwordRef = useRef<TextInput>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,53 +59,72 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Log ind</Text>
-      <Text style={styles.subtitle}>Velkommen tilbage, vi har savnet dine ideer.</Text>
-
-      <Text style={styles.label}>Brugernavn</Text>
-      <TextInput
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Indtast brugernavn eller email"
-        autoCapitalize="none"
-        placeholderTextColor="#7c8798"
-        style={styles.input}
-      />
-
-      <Text style={styles.label}>Adgangskode</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        placeholder="Indtast adgangskode"
-        placeholderTextColor="#7c8798"
-        secureTextEntry
-        style={styles.input}
-      />
-
-      <TouchableOpacity
-        onPress={handleLogin}
-        disabled={isSubmitting}
-        style={[styles.button, isSubmitting && styles.buttonDisabled]}
+    <KeyboardAvoidingView
+      style={styles.flex}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
       >
-        {isSubmitting ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Log ind</Text>
-        )}
-      </TouchableOpacity>
+        <Text style={styles.title}>Log ind</Text>
+        <Text style={styles.subtitle}>Velkommen tilbage, vi har savnet dine ideer.</Text>
 
-      <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/register")}> 
-        <Text style={styles.secondaryCtaText}>Ny her? Opret en konto</Text>
-      </TouchableOpacity>
-    </View>
+        <Text style={styles.label}>Brugernavn</Text>
+        <TextInput
+          value={username}
+          onChangeText={setUsername}
+          placeholder="Indtast brugernavn eller email"
+          autoCapitalize="none"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordRef.current?.focus()}
+          blurOnSubmit={false}
+          placeholderTextColor="#7c8798"
+          style={styles.input}
+        />
+
+        <Text style={styles.label}>Adgangskode</Text>
+        <TextInput
+          ref={passwordRef}
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Indtast adgangskode"
+          placeholderTextColor="#7c8798"
+          secureTextEntry
+          returnKeyType="done"
+          onSubmitEditing={handleLogin}
+          style={styles.input}
+        />
+
+        <TouchableOpacity
+          onPress={handleLogin}
+          disabled={isSubmitting}
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Log ind</Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/register")}> 
+          <Text style={styles.secondaryCtaText}>Ny her? Opret en konto</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  flex: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: "#f8fafc",
+  },
+  container: {
+    flexGrow: 1,
     padding: 24,
     backgroundColor: "#f8fafc",
   },
