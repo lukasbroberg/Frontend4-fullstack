@@ -142,3 +142,31 @@ export async function updateProblem(id: number, title: string, description: stri
     throw new Error(`Could not update problem: ${response.status}`);
   }
 }
+export async function getMyProblems() {
+  const token = await storageService.getToken();
+  console.log("TOKEN in getMyProblems:", token);
+
+  if (!token) {
+    throw new Error("Not logged in");
+  }
+
+  const url = `${API_URL}/my`;
+  console.log("URL /my:", url);
+
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  console.log("STATUS /my:", response.status);
+
+  const text = await response.text();
+  console.log("BODY /my:", text);
+
+  if (!response.ok) {
+    throw new Error(`Could not fetch my problems: ${response.status}`);
+  }
+
+  return text ? JSON.parse(text) : [];
+}

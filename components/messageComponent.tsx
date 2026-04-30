@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { Message } from "../types/Message";
+import { Message } from "../../../types/Message";
 
 
 export default function MessageComponent({id, message, author, timeStamp}: Message){

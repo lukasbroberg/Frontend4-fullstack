@@ -1,8 +1,8 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { authService } from "../services/authService";
-import { storageService } from "../services/storageService";
-import { userService } from "../services/userService";
+import { authService } from "../../../services/authService";
+import { storageService } from "../../../services/storageService";
+import { userService } from "../../../services/userService";
 
 export default function HomeScreen() {
   
