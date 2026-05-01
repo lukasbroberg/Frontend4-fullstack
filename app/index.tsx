@@ -1,6 +1,5 @@
-
-import MyProblems from "./(tabs)/MyProblems";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  return <MyProblems />;
+  return <Redirect href="/(tabs)/feed" />;
 }

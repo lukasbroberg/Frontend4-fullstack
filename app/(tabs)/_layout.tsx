@@ -1,22 +1,31 @@
 import { Feather } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
-
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 
+const colors = {
+    background: "#f8fafc",
+    card: "#ffffff",
+    border: "#e2e8f0",
+    text: "#0f172a",
+    muted: "#64748b",
+    primary: "#2563eb",
+};
 
 export default function TabsLayout() {
-
     const { isAuthenticated, logout } = useAuth();
 
-  const loginButtonHeader = () => {
+    const loginButtonHeader = () => {
         if (isAuthenticated) {
             return (
-                <Pressable onPress={logout} style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}>
+                <Pressable
+                    onPress={logout}
+                    style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
+                >
                     <Text style={styles.primaryButtonText}>Logout</Text>
                 </Pressable>
             );
-    }
+        }
 
         return (
             <View style={styles.buttonGroup}>
@@ -36,84 +45,108 @@ export default function TabsLayout() {
         );
     };
 
-
-    return ( // dynamic route "[ ]"
-        <Tabs screenOptions={{
-            headerShown: true,
-            headerRight: loginButtonHeader,
-        }}>
+    return (
+        <Tabs
+            initialRouteName="feed"
+            screenOptions={{
+                headerShown: true,
+                headerRight: loginButtonHeader,
+                headerTitleAlign: "center",
+                headerStyle: styles.header,
+                headerTitleStyle: styles.headerTitle,
+                headerShadowVisible: false,
+                sceneStyle: styles.scene,
+                tabBarActiveTintColor: colors.primary,
+                tabBarInactiveTintColor: colors.muted,
+                tabBarStyle: styles.tabBar,
+                tabBarLabelStyle: styles.tabBarLabel,
+            }}
+        >
             <Tabs.Screen
                 name="feed"
                 options={{
                     title: "ProblemHub",
-                    tabBarIcon: ({color, focused}) => (
-                        <Feather
-                            name="home"
-                            color={color}
-                            size={16}>    
-                        </Feather>
-                
-                    )
-                 }}
+                    tabBarLabel: "Feed",
+                    tabBarIcon: ({ color, focused }) => (
+                        <Feather name="home" color={color} size={focused ? 22 : 20} />
+                    ),
+                }}
             />
             <Tabs.Screen
                 name="UploadProblem"
                 options={{
-                    title: "Create new",
-                    tabBarIcon: ({color, focused}) => (
-                        <Feather
-                            name="plus-circle"
-                            color={color}
-                            size={16}>
-                        </Feather>
-                
-                    )
-                }} 
+                    title: "Create problem",
+                    tabBarLabel: "Create",
+                    tabBarIcon: ({ color, focused }) => (
+                        <Feather name="plus-circle" color={color} size={focused ? 22 : 20} />
+                    ),
+                }}
             />
-
             <Tabs.Screen
                 name="MyProblems"
                 options={{
                     title: "My problems",
-                    tabBarIcon: ({color, focused}) => (
-                        <Feather
-                            name="user"
-                            color={color}
-                            size={16}>
-                        </Feather>
-                
-                    )
-                }} 
+                    tabBarLabel: "Mine",
+                    tabBarIcon: ({ color, focused }) => (
+                        <Feather name="user" color={color} size={focused ? 22 : 20} />
+                    ),
+                }}
             />
         </Tabs>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
+    scene: {
+        backgroundColor: colors.background,
+    },
+    header: {
+        backgroundColor: colors.card,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+    },
+    headerTitle: {
+        color: colors.text,
+        fontSize: 18,
+        fontWeight: "800",
+    },
+    tabBar: {
+        backgroundColor: colors.card,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        height: 84,
+        paddingTop: 8,
+        paddingBottom: 24,
+    },
+    tabBarLabel: {
+        fontSize: 12,
+        fontWeight: "700",
+    },
     buttonGroup: {
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
-        marginRight: 6,
+        marginRight: 12,
     },
     ghostButton: {
         borderWidth: 1,
-        borderColor: "#0f172a",
+        borderColor: colors.border,
         paddingHorizontal: 12,
         paddingVertical: 7,
         borderRadius: 999,
-        backgroundColor: "#ffffff",
+        backgroundColor: colors.card,
     },
     ghostButtonText: {
-        color: "#0f172a",
+        color: colors.text,
         fontSize: 13,
         fontWeight: "700",
     },
     primaryButton: {
-        backgroundColor: "#0f172a",
+        backgroundColor: colors.primary,
         paddingHorizontal: 12,
         paddingVertical: 7,
         borderRadius: 999,
+        marginRight: 12,
     },
     primaryButtonText: {
         color: "#ffffff",
@@ -125,5 +158,3 @@ const styles = StyleSheet.create({
         transform: [{ scale: 0.98 }],
     },
 });
-
-

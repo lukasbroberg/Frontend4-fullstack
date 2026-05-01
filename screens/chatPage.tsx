@@ -103,14 +103,29 @@ export default function ChatScreen(){
                 style={chatStyle.chatView}
                 data={messages}
                 renderItem={({item}) => (
-                    <MessageComponent id={null} key={item.id} message={item.message} author={item.author} timeStamp={new Date(item.timeStamp).toLocaleString()}></MessageComponent>
-                )}
+                    <MessageComponent
+                      id={item.id}
+                      message={item.message}
+                      author={item.author}
+                      timeStamp={new Date(item.timeStamp).toLocaleString()}
+                      isOwnMessage={item.author === user?.username}
+                    />
+                  )}
                 >
             </FlatList>
             <View style={chatStyle.messageContainer}>
-                <TextInput placeholderTextColor={'gray'} style={chatStyle.messageInput} value={messageInput} placeholder="Message..." onChangeText={setMessageInput}>
-                
-                </TextInput>
+                <TextInput
+                    placeholderTextColor="#94a3b8"
+                    style={chatStyle.messageInput}
+                    value={messageInput}
+                    placeholder="Message..."
+                    onChangeText={setMessageInput}
+                    multiline={true}
+                    scrollEnabled={true}
+                    textAlignVertical="top"
+                    maxLength={1000}
+                    blurOnSubmit={false}
+                />
                 <TouchableOpacity
                     style={(!isSendAble? chatStyle.messageSendBtnDisabled: chatStyle.messageSendBtn)}
                     onPress={handleSendMessage}
@@ -130,16 +145,22 @@ const chatStyle = StyleSheet.create({
         fontSize: 32,
     },
     messageInput: {
-        padding: 10,
-        borderRadius: 10,
-        width: 'auto',
-        backgroundColor: 'white',
         flex: 1,
-        margin: 5,
-        shadowColor: '#00000047',
-        shadowOffset: {width: 0, height: 0},
-        shadowRadius: 2,
-   },
+        minWidth: 0,
+        minHeight: 44,
+        maxHeight: 120,
+        paddingHorizontal: 14,
+        paddingTop: 11,
+        paddingBottom: 11,
+        borderRadius: 22,
+        backgroundColor: '#f1f5f9',
+        borderWidth: 1,
+        borderColor: '#e2e8f0',
+        color: '#0f172a',
+        fontSize: 15,
+        lineHeight: 20,
+        flexWrap: 'wrap',
+    },
     chatView: {
         padding: 20,
         borderRadius: 20,
