@@ -11,50 +11,51 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
-export default function LoginScreen() {
-  const { login } = useAuth();
+export default function RegisterScreen() {
+  const { register, login } = useAuth();
 
+  const emailRef = useRef<TextInput>(null);
   const passwordRef = useRef<TextInput>(null);
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!username.trim() || !password.trim()) {
-      Alert.alert("Fejl", "Udfyld brugernavn og adgangskode");
+  const handleRegister = async () => {
+    if (!username.trim() || !email.trim() || !password.trim()) {
+      Alert.alert("Fejl", "Udfyld alle felter");
       return;
     }
 
     try {
-      setIsSubmitting(true);
+      setLoading(true);
 
-      const result = await login({
+      await register({
+        username: username.trim(),
+        email: email.trim(),
+        password: password.trim(),
+      });
+
+      await login({
         username: username.trim(),
         password: password.trim(),
       });
 
-      console.log("LOGIN SCREEN OK:", result);
+      Alert.alert("Succes", "Konto oprettet");
 
       router.replace("/(tabs)/feed");
     } catch (error: any) {
-      console.log(
-        "LOGIN SCREEN ERROR:",
-        error?.response?.data || error?.message || error
-      );
-
       const message =
-        typeof error?.response?.data === "string"
-          ? error.response.data
-          : error?.response?.data?.message ||
-            error?.response?.data?.error ||
-            error?.message ||
-            "Login mislykkedes";
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Kunne ikke oprette konto";
 
-      Alert.alert("Login mislykkedes", message);
+      Alert.alert("Fejl", message);
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -69,19 +70,34 @@ export default function LoginScreen() {
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>Log ind</Text>
-        <Text style={styles.subtitle}>Velkommen tilbage, vi har savnet dine ideer.</Text>
+        <Text style={styles.title}>Opret konto</Text>
+        <Text style={styles.subtitle}>Byg din profil og del dine bedste problem-loesninger.</Text>
 
         <Text style={styles.label}>Brugernavn</Text>
         <TextInput
           value={username}
           onChangeText={setUsername}
-          placeholder="Indtast brugernavn eller email"
+          placeholder="Vaelg et brugernavn"
+          placeholderTextColor="#7c8798"
+          returnKeyType="next"
+          onSubmitEditing={() => emailRef.current?.focus()}
+          blurOnSubmit={false}
           autoCapitalize="none"
+          style={styles.input}
+        />
+
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          ref={emailRef}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="din@email.dk"
+          placeholderTextColor="#7c8798"
+          autoCapitalize="none"
+          keyboardType="email-address"
           returnKeyType="next"
           onSubmitEditing={() => passwordRef.current?.focus()}
           blurOnSubmit={false}
-          placeholderTextColor="#7c8798"
           style={styles.input}
         />
 
@@ -90,28 +106,28 @@ export default function LoginScreen() {
           ref={passwordRef}
           value={password}
           onChangeText={setPassword}
-          placeholder="Indtast adgangskode"
-          placeholderTextColor="#7c8798"
           secureTextEntry
+          placeholder="Vaelg en sikker kode"
+          placeholderTextColor="#7c8798"
           returnKeyType="done"
-          onSubmitEditing={handleLogin}
+          onSubmitEditing={handleRegister}
           style={styles.input}
         />
 
         <TouchableOpacity
-          onPress={handleLogin}
-          disabled={isSubmitting}
-          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={handleRegister}
+          disabled={loading}
+          style={[styles.button, loading && styles.buttonDisabled]}
         >
-          {isSubmitting ? (
+          {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Log ind</Text>
+            <Text style={styles.buttonText}>Opret konto</Text>
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/register")}> 
-          <Text style={styles.secondaryCtaText}>Ny her? Opret en konto</Text>
+        <TouchableOpacity style={styles.secondaryCta} onPress={() => router.replace("/(auth)/login")}>
+          <Text style={styles.secondaryCtaText}>Har du allerede en konto? Log ind</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
