@@ -1,26 +1,26 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from "react-native";
-import ProblemCard from "../components/ProblemCard";
-import { useAuth } from "../hooks/AuthContext";
-import CategoryService from "../services/categoryService";
+import ProblemCard from "../../components/ProblemCard";
+import { useAuth } from "../../contexts/AuthContext";
+import CategoryService from "../../services/categoryService";
 import {
-    deleteProblem,
-    getProblems,
-    likeProblem,
-    ProblemSort,
-    unlikeProblem,
-} from "../services/problemService";
-import { Category } from "../types/Category";
-import { Problem } from "../types/Problem";
+  deleteProblem,
+  getProblems,
+  likeProblem,
+  ProblemSort,
+  unlikeProblem,
+} from "../../services/problemService";
+import { Category } from "../../types/Category";
+import { Problem } from "../../types/Problem";
 
 const SORT_OPTIONS: { label: string; value: ProblemSort }[] = [
   { label: "Flest likes", value: "likesdesc" },

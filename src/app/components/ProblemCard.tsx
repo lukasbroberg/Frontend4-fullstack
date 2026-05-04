@@ -3,8 +3,8 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { API_BASE_URL } from "../config/api";
-import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
+import { darken, lighten } from "../utils/colorTool";
 
 type Props = {
   problem: Problem;
@@ -56,7 +56,7 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
       style={styles.card}
       onPress={() =>
         router.push({
-          pathname: "/problem/[id]",
+          pathname: "screens/problem/[id]",
           params: { id: problem.id, data: JSON.stringify(problem) },
         } as any)
       }

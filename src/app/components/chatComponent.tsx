@@ -2,16 +2,16 @@ import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import MessageComponent from '../components/messageComponent';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/AuthContext';
 import { getChatFromProblemId } from '../services/chatService';
 import useMessageViewModel from '../services/messageViewModel';
 import useStompMessageService from '../services/stompMessageService';
 import { Message } from '../types/Message';
+import MessageComponent from './messageComponent';
 
 
 
-export default function ChatScreen(){
+export default function ChatComponent(){
 
     const params = useLocalSearchParams();
     const problemId: number = parseInt(params.id as string);

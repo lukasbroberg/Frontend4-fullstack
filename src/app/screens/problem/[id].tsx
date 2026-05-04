@@ -1,9 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import ChatScreen from "../screens/chatPage";
-import { darken, lighten } from "../tools/colorTool";
-import { Problem } from "../types/Problem";
+import ChatScreen from "../../components/chatComponent";
+import { API_BASE_URL } from "../../config/api";
+import { Problem } from "../../types/Problem";
+import { darken, lighten } from "../../utils/colorTool";
 
 export default function ProblemDetail(){
     const{data} = useLocalSearchParams();
@@ -25,7 +26,7 @@ export default function ProblemDetail(){
             {problem.imageUrl ? (
                 <View style={styles.problemImageContainer}>
                     <Image
-                        source={{ uri: `http://localhost:8080${problem.imageUrl}` }}
+                        source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
                         style={styles.problemImage}
                         resizeMode="contain"
                     />

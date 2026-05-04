@@ -1,7 +1,7 @@
 import { RxStomp, RxStompConfig } from '@stomp/rx-stomp';
 import { useRef } from "react";
 import { API_BASE_URL } from "../config/api";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/AuthContext";
 
 const socketURL = API_BASE_URL.replace("http","ws")
 

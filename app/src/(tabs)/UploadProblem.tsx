@@ -2,26 +2,29 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
-import SignInBox from "../components/signInBox";
-import { useAuth } from "../hooks/AuthContext";
-import CategoryService from "../services/categoryService";
-import { createProblem } from "../services/problemService";
-import { Category } from "../types/Category";
+import SignInBox from "../../components/signInBox";
+import { useAuth } from "../../contexts/AuthContext";
+import CategoryService from "../../services/categoryService";
+import { createProblem } from "../../services/problemService";
+import { Category } from "../../types/Category";
+
 
 export default function UploadProblemScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
-  const { getAllCategories } = CategoryService();
+
+  const { getAllCategories} = CategoryService();
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
   const [image, setImage] = useState<any>(null);

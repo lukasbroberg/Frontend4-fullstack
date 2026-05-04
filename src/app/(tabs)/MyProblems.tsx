@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/AuthContext";
 
 export default function MyProblems(){
 
