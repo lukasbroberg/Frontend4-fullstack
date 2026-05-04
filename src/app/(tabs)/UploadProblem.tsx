@@ -2,12 +2,16 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-  FlatList,
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -66,7 +70,8 @@ export default function UploadProblemScreen() {
       router.replace("../(tabs)");
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Upload failed");
+      const message = error instanceof Error ? error.message : "Ukendt fejl";
+      alert(`Upload failed: ${message}`);
     }
   }
 
@@ -91,21 +96,18 @@ export default function UploadProblemScreen() {
 
     return (
       <View>
-        <FlatList
-          data={categories}
-          keyExtractor={(item, index) => `${item.name}-${index}`}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[styles.input, { backgroundColor: item.hexColor }]}
-              onPress={() => {
-                setDropdownOpen(false);
-                setSelectedCategory(item);
-              }}
-            >
-              <Text>{item.name}</Text>
-            </TouchableOpacity>
-          )}
-        />
+        {categories.map((item, index) => (
+          <TouchableOpacity
+            key={`${item.name}-${index}`}
+            style={[styles.input, styles.dropdownItem, { backgroundColor: item.hexColor }]}
+            onPress={() => {
+              setDropdownOpen(false);
+              setSelectedCategory(item);
+            }}
+          >
+            <Text>{item.name}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     );
   }
@@ -119,7 +121,7 @@ export default function UploadProblemScreen() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
     });
 
@@ -133,54 +135,75 @@ export default function UploadProblemScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Titel</Text>
-      <TextInput
-        style={styles.input}
-        value={title}
-        onChangeText={setTitle}
-        placeholder="Indtast titel"
-      />
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoidingView}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.label}>Titel</Text>
+          <TextInput
+            style={styles.input}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Indtast titel"
+            returnKeyType="done"
+            onSubmitEditing={Keyboard.dismiss}
+          />
 
-      <Text style={styles.label}>Category</Text>
-      <View>
-        <DropdownMenu />
-      </View>
+          <Text style={styles.label}>Category</Text>
+          <View>
+            <DropdownMenu />
+          </View>
 
-      <Text style={styles.label}>Beskrivelse</Text>
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        value={description}
-        onChangeText={setDescription}
-        placeholder="Indtast beskrivelse"
-        multiline
-      />
+          <Text style={styles.label}>Beskrivelse</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Indtast beskrivelse"
+            multiline
+            textAlignVertical="top"
+          />
 
-      <Text style={styles.label}>Billede</Text>
-      <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-        <Text>{image ? "Vælg et andet billede" : "Vælg billede"}</Text>
-      </TouchableOpacity>
-
-      {image ? (
-        <>
-          <Image source={{ uri: image.uri }} style={styles.previewImage} />
-          <TouchableOpacity style={styles.removeImageButton} onPress={() => setImage(null)}>
-            <Text style={styles.removeImageButtonText}>Fjern billede</Text>
+          <Text style={styles.label}>Billede</Text>
+          <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+            <Text>{image ? "Vælg et andet billede" : "Vælg billede"}</Text>
           </TouchableOpacity>
-        </>
-      ) : null}
 
-      <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-        <Text style={styles.uploadButtonText}>Upload problem</Text>
-      </TouchableOpacity>
-    </View>
+          {image ? (
+            <>
+              <Image source={{ uri: image.uri }} style={styles.previewImage} />
+              <TouchableOpacity style={styles.removeImageButton} onPress={() => setImage(null)}>
+                <Text style={styles.removeImageButtonText}>Fjern billede</Text>
+              </TouchableOpacity>
+            </>
+          ) : null}
+
+          <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+            <Text style={styles.uploadButtonText}>Upload problem</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  keyboardAvoidingView: {
     flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  container: {
+    flexGrow: 1,
     padding: 16,
+    paddingBottom: 32,
   },
   label: {
     marginTop: 12,
@@ -194,6 +217,9 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
+  },
+  dropdownItem: {
+    marginBottom: 6,
   },
   imagePickerButton: {
     marginTop: 8,

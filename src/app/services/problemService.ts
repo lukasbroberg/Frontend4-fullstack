@@ -35,26 +35,25 @@ export async function createProblem(
 
   formData.append(
     "problem",
-    new Blob(
-      [
-        JSON.stringify({
-          title,
-          description,
-          category,
-        }),
-      ],
-      { type: "application/json" }
-    )
+    JSON.stringify({
+      title,
+      description,
+      category,
+    })
   );
 
   if (image) {
     if (image.file) {
       formData.append("image", image.file);
     } else {
+      const imageUri = image.uri;
+      const fileName = image.fileName ?? imageUri.split("/").pop() ?? "problem.jpg";
+      const fileType = image.mimeType ?? "image/jpeg";
+
       formData.append("image", {
-        uri: image.uri,
-        name: image.fileName ?? "problem.jpg",
-        type: image.mimeType ?? "image/jpeg",
+        uri: imageUri,
+        name: fileName,
+        type: fileType,
       } as any);
     }
   }
