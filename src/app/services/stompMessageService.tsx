@@ -1,5 +1,5 @@
 import { RxStomp, RxStompConfig } from '@stomp/rx-stomp';
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { API_BASE_URL } from "../config/api";
 import { useAuth } from "../hooks/AuthContext";
 
@@ -7,6 +7,7 @@ const socketURL = API_BASE_URL.replace("http","ws")
 
 export default function useStompMessageService(){
 
+    const [connected, setConnected] = useState(false);
     const rxStompRef = useRef(new RxStomp());
     const rxStomp = rxStompRef.current;
     const {isAuthenticated, user, token} = useAuth();
@@ -43,6 +44,7 @@ export default function useStompMessageService(){
                 console.log(error.body);
             });
             onConnected();
+            setConnected(true)
         })
     }
 
@@ -70,6 +72,7 @@ export default function useStompMessageService(){
             return false;
         }
         rxStomp.deactivate();
+        setConnected(false);
         return true;
     }
 
@@ -123,6 +126,8 @@ export default function useStompMessageService(){
         activate,
         disconnect,
         publishMessageWithHeaders,
-        getClient
+        getClient,
+        connected,
+        setConnected
     }
 }

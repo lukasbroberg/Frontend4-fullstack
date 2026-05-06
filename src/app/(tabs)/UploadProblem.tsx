@@ -1,75 +1,32 @@
-import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import {
-    FlatList,
-    Image,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 import SignInBox from "../components/signInBox";
 import { useAuth } from "../hooks/AuthContext";
-import CategoryService from "../services/categoryService";
-import { createProblem } from "../services/problemService";
-import { Category } from "../types/Category";
+import useUploadProblem from "../hooks/useUploadProblem";
 
 export default function UploadProblemScreen() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const { getAllCategories } = CategoryService();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | undefined>(undefined);
-  const [image, setImage] = useState<any>(null);
 
-  const { isAuthenticated } = useAuth();
+  const {isAuthenticated, token} = useAuth();
+  const {title, description, categories, dropdownOpen, selectedCategory, image,
+        setTitle, setDescription, setCategories, setDropdownOpen, setSelectedCategory, setImage,
+        handleUpload, pickImage} = useUploadProblem();
 
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      const fetchedCategories = await getAllCategories();
-      setCategories(fetchedCategories);
-    };
-
-    fetchData();
-  }, []);
-
-  async function handleUpload() {
-    try {
-      console.log("handleUpload started");
-
-      if (!title || !description) {
-        alert("Titel og beskrivelse skal udfyldes");
-        return;
-      }
-
-      if (!selectedCategory) {
-        alert("Choose a category");
-        return;
-      }
-      
-      console.log("selected image", image);
-      console.log("before createProblem");
-      const result = await createProblem(title, description, selectedCategory, image);
-      console.log("after createProblem", result);
-
-      setTitle("");
-      setDescription("");
-      setSelectedCategory(undefined);
-      setImage(null);
-      alert("Problem uploaded");
-
-      console.log("before router.replace");
-      router.replace("../(tabs)");
-    } catch (error) {
-      console.error("Upload failed:", error);
-      alert("Upload failed");
-    }
+  if (!isAuthenticated) {
+    return <SignInBox label="upload a problem" />;
   }
 
+  /** Dropdown menu component for choosing category
+   * 
+   * @returns the html component structure
+   */
   function DropdownMenu() {
     if (!dropdownOpen) {
       return (
@@ -110,28 +67,9 @@ export default function UploadProblemScreen() {
     );
   }
 
-  const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      alert("Du skal give adgang til billeder for at uploade et billede.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setImage(result.assets[0]);
-    }
-  };
-
-  if (!isAuthenticated) {
-    return <SignInBox label="upload a problem" />;
-  }
-
+  /** Actual UseProblem view
+   * 
+   */
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Titel</Text>

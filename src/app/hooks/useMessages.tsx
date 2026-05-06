@@ -1,31 +1,20 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../config/api";
+import { fetchMessagesFromChatId } from "../services/chatService";
 import { Message } from "../types/Message";
 
 const baseURL = API_BASE_URL;
 
-export default function useMessageViewModel(){
+export default function useMessages(){
 
     const [messages, setMessages] = useState<Message[]>([]);
 
-    async function fetchMessagesFromChatId(chatId: number | undefined){
+    async function getMessagesFromChat(chatId: number | undefined){
 
-        if(chatId == undefined){
-            throw new Error("No given chatId")
-        }
-
-        const response = await fetch(`${baseURL}/api/message/chat/${chatId}`, {
-            method: 'GET',
-        })
-
-        if(!response.ok){
-            throw new Error("Unable to get messages");
-        }
-
-        const data = await response.json();
+        const data = await fetchMessagesFromChatId(chatId);
         
+        //Filter messages and remove null
         var filteredData: Message[] = [];
-
         for(var i=0; i<data.length; i++){
             if(data[i]==null){
                 continue;
@@ -40,6 +29,6 @@ export default function useMessageViewModel(){
     return{
         messages,
         setMessages,
-        fetchMessagesFromChatId
+        getMessagesFromChat
     }
 }

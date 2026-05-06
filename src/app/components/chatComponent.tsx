@@ -3,8 +3,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from '../hooks/AuthContext';
+import useMessages from '../hooks/useMessages';
 import { getChatFromProblemId } from '../services/chatService';
-import useMessageViewModel from '../services/messageViewModel';
 import useStompMessageService from '../services/stompMessageService';
 import { Message } from '../types/Message';
 import MessageComponent from './messageComponent';
@@ -16,18 +16,16 @@ export default function ChatComponent(){
     const params = useLocalSearchParams();
     const problemId: number = parseInt(params.id as string);
     const [chatId, setChatId] = useState<number>();
-    const [connected, setConnected] = useState(false);
     const [messageInput, setMessageInput] = useState('');
-    const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
+    const {messages, setMessages, getMessagesFromChat} = useMessages();
     const {isAuthenticated, user, token} = useAuth();
     const flatListRef = useRef<FlatList<Message>>(null);
-    const {initiateConnection, activate, disconnect, publishMessageWithHeaders} = useStompMessageService();
+    const {initiateConnection, activate, disconnect, publishMessageWithHeaders, connected, setConnected} = useStompMessageService();
 
 
     /** Automatically scroll down upon new incoming messages
      */
     useEffect(() => {
-
         if(flatListRef.current && messages.length>0){
             flatListRef.current.scrollToEnd({animated: true})
         }
@@ -40,7 +38,6 @@ export default function ChatComponent(){
     }
 
     function handleSendMessage(){
-
         try{
             var message_req = publishMessageWithHeaders(chatId,messageInput);
             if(message_req){
@@ -56,9 +53,8 @@ export default function ChatComponent(){
     useEffect(() => {
 
         const autoLoadAndConnect = async() => {
-
-            //Get chatId
             try{
+                //Get chatId
                 const _chatId: number = await getChatFromProblemId(problemId);
                 await setChatId(_chatId);
                 
@@ -68,12 +64,10 @@ export default function ChatComponent(){
                     receiveMessage,
                     async () => {
                         try{
-                            await fetchMessagesFromChatId(_chatId);
+                            await getMessagesFromChat(_chatId);
                         }catch(err){
-                            //Don't do anything for now
-                            console.log(err);
+                            alert('Unable to get chats messages');
                         }
-                        setConnected(true);
                     }
                 );
                 await activate();
@@ -88,7 +82,6 @@ export default function ChatComponent(){
         //Cleanup connection on leaving the chat page
         return() => {
             var disconnectResult = disconnect();
-            setConnected(!disconnectResult);
         }
     },[problemId])
 
