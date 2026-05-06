@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 
+/** Register screen for creating a new account. Logs in automatically on success. */
 export default function RegisterScreen() {
   const { register, login } = useAuth();
 
@@ -23,6 +24,7 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  /** Validates inputs, registers the user, and logs in automatically. Alerts on failure. */
   const handleRegister = async () => {
     if (!username.trim() || !email.trim() || !password.trim()) {
       Alert.alert("Fejl", "Udfyld alle felter");

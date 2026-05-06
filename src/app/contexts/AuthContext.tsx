@@ -21,6 +21,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/** Provides authentication state and actions to the app. */
 export default function AuthProvider({
     children,
 }: {children: React.ReactNode;}) {
@@ -49,6 +50,7 @@ export default function AuthProvider({
       loadStoredAuth();
     }, []);
 
+    /** Logs in the user and stores their token and profile. */
     const login = async (data: LoginRequest): Promise<AuthResponse> => {
       const response = await authService.login(data);
       setUser(response.user);
@@ -56,10 +58,12 @@ export default function AuthProvider({
       return response;
     };
 
+    /** Registers a new user account. */
     const register = async (data: RegisterRequest) => {
       return await authService.register(data);
     };
 
+    /** Logs out the user and clears stored auth state. */
     const logout = async () => {
       await authService.logout();
       setUser(null);
@@ -83,6 +87,7 @@ export default function AuthProvider({
     );
 }
 
+/** Hook to access the auth context. Must be used inside AuthProvider. */
 export function useAuth() {
   const context = useContext(AuthContext);
 

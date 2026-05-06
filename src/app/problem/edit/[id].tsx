@@ -7,6 +7,7 @@ import { updateProblem } from "../../services/problemService";
 import { Category } from "../../types/Category";
 import { Problem } from "../../types/Problem";
 
+/** Edit screen for updating a problem's title, description, and category. */
 export default function EditProblem(){
     const {data} = useLocalSearchParams();
     const router = useRouter();
@@ -20,6 +21,7 @@ export default function EditProblem(){
     const { getAllCategories } = CategoryService();
 
     useEffect(() => {
+        /** Fetches all available categories and stores them in state. */
         const fetchCategories = async () => {
             const result = await getAllCategories();
             setCategories(result);
@@ -28,6 +30,7 @@ export default function EditProblem(){
         fetchCategories();
     }, []);
 
+    /** Saves the updated problem and navigates back to the feed. Alerts on failure. */
     async function handleSave() {
         try {
             await updateProblem(problem.id, title, description, selectedCategory);

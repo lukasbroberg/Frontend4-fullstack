@@ -9,6 +9,7 @@ import { addRequirement, getRequirements, Requirement, toggleRequirement } from 
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
 
+/** Full-page detail view for a single problem. Shows description, image, category, requirements, and chat. */
 export default function ProblemDetail(){
     const{data} = useLocalSearchParams();
     const problem: Problem = JSON.parse(data as string);
@@ -23,6 +24,7 @@ export default function ProblemDetail(){
         fetchRequirements();
     }, []);
 
+    /** Fetches and sets the requirements for the current problem. */
     async function fetchRequirements() {
         try {
             const data = await getRequirements(problem.id);
@@ -32,6 +34,7 @@ export default function ProblemDetail(){
         }
     }
 
+    /** Submits a new requirement and refreshes the requirements list. */
     async function handleAddRequirement() {
         if (!newRequirement.trim()) return;
         setLoading(true);
@@ -47,6 +50,10 @@ export default function ProblemDetail(){
         }
     }
 
+    /**
+     * Toggles the fulfilled state of a requirement.
+     * @param requirementId - ID of the requirement to toggle.
+     */
     async function handleToggle(requirementId: number) {
         try {
             const updated = await toggleRequirement(problem.id, requirementId);

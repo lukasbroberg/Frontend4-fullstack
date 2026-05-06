@@ -7,6 +7,11 @@ const API_URL = `${API_BASE_URL}/problems`;
 
 export type ProblemSort = "likesdesc" | "likesasc" | "datedesc" | "dateasc";
 
+/**
+ * Fetches all problems, optionally sorted.
+ * @param sort - Optional sort order.
+ * @returns List of problems.
+ */
 export async function getProblems(sort?: ProblemSort): Promise<Problem[]> {
   const token = await storageService.getToken();
   const headers: Record<string, string> = {};
@@ -23,6 +28,13 @@ export async function getProblems(sort?: ProblemSort): Promise<Problem[]> {
   return response.json();
 }
 
+/**
+ * Creates a new problem with an optional image.
+ * @param title - Problem title.
+ * @param description - Problem description.
+ * @param category - Selected category.
+ * @param image - Optional image file.
+ */
 export async function createProblem(
   title: string,
   description: string,
@@ -73,6 +85,10 @@ export async function createProblem(
   return response.json();
 }
 
+/**
+ * Likes a problem on behalf of the current user.
+ * @param problemId - ID of the problem to like.
+ */
 export async function likeProblem (problemId: number): Promise<void> {
   const token = await storageService.getToken();
   const response = await fetch (`${API_URL}/${problemId}/like`, {
@@ -87,6 +103,10 @@ export async function likeProblem (problemId: number): Promise<void> {
   }
 }
 
+/**
+ * Removes the current user's like from a problem.
+ * @param problemId - ID of the problem to unlike.
+ */
 export async function unlikeProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
   const response = await fetch(`${API_URL}/${problemId}/like`,{
@@ -102,6 +122,10 @@ export async function unlikeProblem(problemId: number): Promise<void> {
 }
 
 
+/**
+ * Deletes a problem. Requires authentication.
+ * @param problemId - ID of the problem to delete.
+ */
 export async function deleteProblem(problemId: number): Promise<void> {
   const token = await storageService.getToken();
 
@@ -122,6 +146,13 @@ export async function deleteProblem(problemId: number): Promise<void> {
   }
 }
 
+/**
+ * Updates a problem's title, description, and category.
+ * @param id - ID of the problem to update.
+ * @param title - New title.
+ * @param description - New description.
+ * @param category - New category.
+ */
 export async function updateProblem(id: number, title: string, description: string, category: Category) {
   const token = await storageService.getToken();
   if (!token){
@@ -141,6 +172,10 @@ export async function updateProblem(id: number, title: string, description: stri
     throw new Error(`Could not update problem: ${response.status}`);
   }
 }
+/**
+ * Fetches all problems created by the current user.
+ * @returns List of the user's own problems.
+ */
 export async function getMyProblems() {
   const token = await storageService.getToken();
 
