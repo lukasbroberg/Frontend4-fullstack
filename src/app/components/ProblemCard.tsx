@@ -12,10 +12,12 @@ type Props = {
   onDelete?: (ProblemId: number) => void;
 };
 
+/** Card component displaying a problem with like and delete actions. */
 export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) {
   const [showConfirm, setShowConfirm] = useState(false);
   const router = useRouter();
 
+  /** Shows a delete confirmation dialog, using native Alert on mobile and a modal on web. */
   function handleDelete() {
     if (Platform.OS === "web") {
       setShowConfirm(true);
@@ -31,6 +33,11 @@ export default function ProblemCard({ problem, onLikeToggle, onDelete }: Props) 
     }
   }
 
+  /**
+   * Returns a human-readable time string relative to now.
+   * @param DateString - ISO date string of the creation time.
+   * @returns Formatted string e.g. "5m ago", "2h ago", "3d ago".
+   */
   const getTimeAgo = (DateString: string) => {
     const now = new Date();
     const created = new Date(DateString);

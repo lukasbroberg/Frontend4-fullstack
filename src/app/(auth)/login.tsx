@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 
+/** Login screen with username and password fields. Navigates to feed on success. */
 export default function LoginScreen() {
   const { login } = useAuth();
 
@@ -21,6 +22,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /** Validates inputs and calls the auth login function. Alerts on failure. */
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert("Fejl", "Udfyld brugernavn og adgangskode");
