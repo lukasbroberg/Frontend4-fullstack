@@ -71,9 +71,7 @@ export default function LoginScreen() {
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
+    
 
         <Text style={styles.title}>Log ind</Text>
         <Text style={styles.subtitle}>Velkommen tilbage, vi har savnet dine ideer.</Text>
