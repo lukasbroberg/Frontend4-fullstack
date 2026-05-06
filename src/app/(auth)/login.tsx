@@ -69,6 +69,10 @@ export default function LoginScreen() {
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>←</Text>
+        </TouchableOpacity>
+
         <Text style={styles.title}>Log ind</Text>
         <Text style={styles.subtitle}>Velkommen tilbage, vi har savnet dine ideer.</Text>
 
@@ -127,6 +131,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 24,
     backgroundColor: "#f8fafc",
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    marginBottom: 24,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  backButtonText: {
+    color: "#1d4ed8",
+    fontSize: 16,
+    fontWeight: "800",
   },
   title: {
     fontSize: 30,
