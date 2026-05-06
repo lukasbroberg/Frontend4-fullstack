@@ -20,8 +20,10 @@ export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+// Send login request and store authentication user data
   const handleLogin = async () => {
+
+    // Prevent login if username or password fields are empty
     if (!username.trim() || !password.trim()) {
       Alert.alert("Fejl", "Udfyld brugernavn og adgangskode");
       return;
@@ -29,14 +31,14 @@ export default function LoginScreen() {
 
     try {
       setIsSubmitting(true);
-
+// call authentication Logic from AuthContext
       const result = await login({
         username: username.trim(),
         password: password.trim(),
       });
 
       console.log("LOGIN SCREEN OK:", result);
-
+//Redirect authenticated user to the feed screen
       router.replace("/(tabs)/feed");
     } catch (error: any) {
       console.log(

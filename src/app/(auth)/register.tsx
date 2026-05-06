@@ -23,7 +23,9 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Send registration request and create a new user account
   const handleRegister = async () => {
+    // Prevent registration if any field is empty
     if (!username.trim() || !email.trim() || !password.trim()) {
       Alert.alert("Fejl", "Udfyld alle felter");
       return;
@@ -31,7 +33,7 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
-
+// call authentication context register a new user  
       await register({
         username: username.trim(),
         email: email.trim(),
@@ -44,7 +46,7 @@ export default function RegisterScreen() {
       });
 
       Alert.alert("Succes", "Konto oprettet");
-
+// Redirect user after successful registration and login
       router.replace("/(tabs)/feed");
     } catch (error: any) {
       const message =
