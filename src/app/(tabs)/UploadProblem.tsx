@@ -6,12 +6,12 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -54,7 +54,7 @@ export default function UploadProblemScreen() {
         alert("Choose a category");
         return;
       }
-      
+
       console.log("selected image", image);
       console.log("before createProblem");
       const result = await createProblem(title, description, selectedCategory, image);
@@ -139,12 +139,13 @@ export default function UploadProblemScreen() {
       style={styles.keyboardAvoidingView}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.container}
-          keyboardShouldPersistTaps="handled"
-        >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+      >
+        <Pressable style={styles.formContainer} onPress={Keyboard.dismiss}>
           <Text style={styles.label}>Titel</Text>
           <TextInput
             style={styles.input}
@@ -187,8 +188,8 @@ export default function UploadProblemScreen() {
           <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
             <Text style={styles.uploadButtonText}>Upload problem</Text>
           </TouchableOpacity>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+        </Pressable>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -204,6 +205,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     paddingBottom: 32,
+  },
+  formContainer: {
+    flexGrow: 1,
   },
   label: {
     marginTop: 12,
@@ -237,15 +241,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   removeImageButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: "#ef4444",
     borderRadius: 8,
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 16,
   },
   removeImageButtonText: {
-    color: 'white',
-    fontWeight: '600',
+    color: "white",
+    fontWeight: "600",
   },
   uploadButton: {
     backgroundColor: "#007AFF",

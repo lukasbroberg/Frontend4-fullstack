@@ -2,9 +2,8 @@ import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { API_BASE_URL } from "../config/api";
-import ChatScreen from "../screens/chatPage";
 import { addRequirement, getRequirements, Requirement, toggleRequirement } from "../services/requirementService";
 import { darken, lighten } from "../tools/colorTool";
 import { Problem } from "../types/Problem";
@@ -66,59 +65,130 @@ export default function ProblemDetail(){
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <Stack.Screen options={{ title: problem.title}} />
-            <View style={[styles.categoryBadge, {backgroundColor: problem.category ? lighten(problem.category.hexColor) : "lightgray"}]}>
-                <Text style={{color: problem.category ? darken(problem.category.hexColor): 'gray', fontSize: 12}}>
-                    {problem.category ? problem.category.name : 'No category'}
-                </Text>
-            </View>
+        <View style={styles.screen}>
+            <Stack.Screen options={{ title: problem.title }} />
 
-            <Text style={styles.description}>{problem.description}</Text>
+            <FlatList
+                data={[]}
+                renderItem={null}
+                keyExtractor={(_, index) => index.toString()}
+                style={styles.problemList}
+                contentContainerStyle={styles.contentContainer}
+                ListHeaderComponent={
+                    <>
+                        <View style={[styles.categoryBadge, {backgroundColor: problem.category ? lighten(problem.category.hexColor) : "lightgray"}]}>
+                            <Text style={{color: problem.category ? darken(problem.category.hexColor): 'gray', fontSize: 12}}>
+                                {problem.category ? problem.category.name : 'No category'}
+                            </Text>
+                        </View>
 
-            {problem.imageUrl ? (
-                <View style={styles.problemImageContainer}>
-                    <Image
-                        source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
-                        style={styles.problemImage}
-                        resizeMode="contain"
-                    />
-                </View>
-            ) : null}
+                        <Text style={styles.description}>{problem.description}</Text>
 
-            {/* Requirements sektion */}
-            <View style={styles.requirementsContainer}>
-                <Text style={styles.requirementsTitle}>Krav</Text>
+                        {problem.imageUrl ? (
+                            <View style={styles.problemImageContainer}>
+                                <Image
+                                    source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
+                                    style={styles.problemImage}
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        ) : null}
 
-                {/* Viser hvert krav som en række med checkbox */}
-                {requirements.map((req) => (
-                    <TouchableOpacity
-                        key={req.id}
-                        style={styles.requirementRow}
-                        onPress={() => handleToggle(req.id)}
-                    >
-                        {/* Viser fyldt checkbox hvis fulfilled, ellers tom */}
-                        <Feather
-                            name={req.fulfilled ? "check-circle" : "circle"}
-                            size={15}
-                            color={req.fulfilled ? "green" : "#857c7c"}
-                        />
-                        {/* Viser teksten med streg igennem hvis fulfilled */}
-                        <Text style={[styles.requirementText, req.fulfilled && styles.requirementFulfilled]}>
-                            {req.description}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
+                        {/* Requirements sektion */}
+                        <View style={styles.requirementsCard}>
+                            <View style={styles.requirementsHeader}>
+                                <View>
+                                    <Text style={styles.requirementsTitle}>Krav</Text>
+                                    <Text style={styles.requirementsSubtitle}>
+                                        {requirements.length === 0
+                                            ? "Ingen krav endnu"
+                                            : `${requirements.filter(req => req.fulfilled).length}/${requirements.length} gennemført`}
+                                    </Text>
+                                </View>
 
-                {/* Tilføj knap vises kun hvis brugeren ejer problemet */}
-                {problem.createdByCurrentUser && (
-                    <TouchableOpacity
-                        style={styles.addRequirementButton}
-                        onPress={() => setModalVisible(true)}
-                    >
-                      <Text style={styles.addRequirementText}>Tilføj nyt krav</Text>
-                    </TouchableOpacity>
-                )}
+                                {problem.createdByCurrentUser && (
+                                    <TouchableOpacity
+                                        style={styles.addRequirementIconButton}
+                                        onPress={() => setModalVisible(true)}
+                                        activeOpacity={0.85}
+                                    >
+                                        <Feather name="plus" size={18} color="#fff" />
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+
+                            {requirements.length === 0 ? (
+                                <View style={styles.emptyRequirementsBox}>
+                                    <Feather name="clipboard" size={20} color="#64748b" />
+                                    <Text style={styles.emptyRequirementsText}>Der er ikke tilføjet krav endnu.</Text>
+                                </View>
+                            ) : (
+                                <View style={styles.requirementsList}>
+                                    {requirements.map((req) => (
+                                        <TouchableOpacity
+                                            key={req.id}
+                                            style={[
+                                                styles.requirementRow,
+                                                !problem.createdByCurrentUser && styles.requirementRowReadonly,
+                                            ]}
+                                            onPress={() => {
+                                                if (problem.createdByCurrentUser) {
+                                                    handleToggle(req.id);
+                                                }
+                                            }}
+                                            activeOpacity={problem.createdByCurrentUser ? 0.75 : 1}
+                                            disabled={!problem.createdByCurrentUser}
+                                        >
+                                            <View style={[
+                                                styles.requirementCheckbox,
+                                                req.fulfilled && styles.requirementCheckboxFulfilled,
+                                                !problem.createdByCurrentUser && styles.requirementCheckboxReadonly,
+                                            ]}>
+                                                {req.fulfilled && <Feather name="check" size={13} color="#fff" />}
+                                            </View>
+
+                                            <Text style={[styles.requirementText, req.fulfilled && styles.requirementFulfilled]}>
+                                                {req.description}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            )}
+
+                            
+                        </View>
+
+                        <Text style={styles.date}>{new Date(problem.createdAt).toLocaleDateString()}</Text>
+
+                        {problem.createdByCurrentUser && (
+                            <TouchableOpacity
+                                style={styles.editButton}
+                                onPress={() => router.push({pathname: '/problem/edit/[id]', params: { id: problem.id, data: JSON.stringify(problem)}} as any)}
+                            >
+                                <Feather name="edit" size={20} color="#333" />
+                                <Text style={styles.editText}>Redigere</Text>
+                            </TouchableOpacity>
+                        )}
+                    </>
+                }
+            />
+
+            <View style={styles.chatButtonContainer}>
+                <TouchableOpacity
+                    style={styles.chatButton}
+                    onPress={() =>
+                        router.push({
+                            pathname: "/screens/chatPage",
+                            params: {
+                                id: problem.id.toString(),
+                                problemTitle: problem.title,
+                            },
+                        } as any)
+                    }
+                >
+                    <Feather name="message-circle" size={20} color="#fff" />
+                    <Text style={styles.chatButtonText}>Åbn beskeder</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Modal/popup til at tilføje nyt krav */}
@@ -159,33 +229,44 @@ export default function ProblemDetail(){
                     </View>
                 </View>
             </Modal>
-
-            <Text style={styles.date}>{new Date(problem.createdAt).toLocaleDateString()}</Text>
-
-            {problem.createdByCurrentUser && (
-                <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => router.push({pathname: '/problem/edit/[id]', params: { id: problem.id, data: JSON.stringify(problem)}} as any)}
-                >
-                    <Feather name="edit" size={20} color="#333" />
-                    <Text style={styles.editText}>Redigere</Text>
-                </TouchableOpacity>
-            )}
-
-            <View>
-                <Text style={styles.label}>Beskeder</Text>
-                <ChatScreen />
-            </View>
-
-        </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  problemList: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    marginBottom: 92,
+  },
+  contentContainer: {
     padding: 20,
+    paddingBottom: 24,
+  },
+  chatButtonContainer: {
+    position: 'absolute',
+    left: 20,
+    right: 20,
+    bottom: 20,
+  },
+  chatButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 12,
+  },
+  chatButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   categoryBadge: {
     alignSelf: 'flex-start',
@@ -214,48 +295,105 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  requirementsContainer: {
+  requirementsCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 16,
     marginTop: 20,
-    marginBottom: 8,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  requirementsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
   },
   requirementsTitle: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#0e0d0d',
-    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  requirementsSubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    marginTop: 3,
+  },
+  addRequirementIconButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#007AFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  requirementsList: {
+    gap: 8,
   },
   requirementRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#e2d8d8',
+    gap: 12,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  requirementRowReadonly: {
+    opacity: 0.9,
+  },
+  requirementCheckbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#94a3b8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  requirementCheckboxFulfilled: {
+    backgroundColor: '#22c55e',
+    borderColor: '#22c55e',
+  },
+  requirementCheckboxReadonly: {
+    borderColor: '#cbd5e1',
   },
   requirementText: {
     fontSize: 15,
-    color: '#333',
+    color: '#1f2937',
     flex: 1,
+    lineHeight: 20,
   },
   requirementFulfilled: {
     textDecorationLine: 'line-through',
-    color: 'gray',
+    color: '#94a3b8',
   },
-  addRequirementButton: {
+  emptyRequirementsBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginTop: 12,
-    alignSelf: 'flex-start',
-    backgroundColor: '#ce1fd4',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 15,
-},
-addRequirementText: {
+    gap: 10,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  emptyRequirementsText: {
+    color: '#64748b',
     fontSize: 14,
-    color: '#181616',
-},
+    flex: 1,
+  },
+  
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -309,8 +447,5 @@ addRequirementText: {
   editText: {
     fontSize: 16,
     color: '#333',
-  },
-  label: {
-    marginTop: 20
   }
 });

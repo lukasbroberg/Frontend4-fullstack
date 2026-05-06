@@ -1,7 +1,7 @@
 import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from "react";
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MessageComponent from '../components/messageComponent';
 import { useAuth } from '../contexts/AuthContext';
 import { getChatFromProblemId } from '../services/chatService';
@@ -23,15 +23,18 @@ export default function ChatScreen(){
     const flatListRef = useRef<FlatList<Message>>(null);
     const {initiateConnection, activate, disconnect, publishMessageWithHeaders} = useStompMessageService();
 
+    const newestMessagesFirst = useMemo(() => {
+        return [...messages].reverse();
+    }, [messages]);
 
-    /** Automatically scroll down upon new incoming messages
+    /** Automatically keep the chat at the newest message.
+     * Because the FlatList is inverted, offset 0 is the bottom/newest message.
      */
     useEffect(() => {
-
-        if(flatListRef.current && messages.length>0){
-            flatListRef.current.scrollToEnd({animated: true})
+        if (flatListRef.current && messages.length > 0) {
+            flatListRef.current.scrollToOffset({ offset: 0, animated: true });
         }
-    },[messages])
+    }, [messages]);
 
     function receiveMessage(message: {body: string}){
         const data = JSON.parse(message.body);
@@ -95,13 +98,24 @@ export default function ChatScreen(){
     const isSendAble = connected && isAuthenticated && token && messageInput!="";
 
     return(
-        <View>
+        <KeyboardAvoidingView
+            style={chatStyle.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={90}
+        >
             <Text style={chatStyle.status}>{(isAuthenticated?"":"You need to sign in to send messages")}</Text>
             <FlatList
-                nestedScrollEnabled={true}
                 ref={flatListRef}
                 style={chatStyle.chatView}
-                data={messages}
+                data={newestMessagesFirst}
+                keyExtractor={(item, index) =>
+                    item.id != null
+                        ? item.id.toString()
+                        : `${item.author}-${item.timeStamp}-${index}`
+                }
+                nestedScrollEnabled={true}
+                inverted={true}
+                keyboardShouldPersistTaps="handled"
                 renderItem={({item}) => (
                     <MessageComponent
                       id={item.id}
@@ -111,8 +125,7 @@ export default function ChatScreen(){
                       isOwnMessage={item.author === user?.username}
                     />
                   )}
-                >
-            </FlatList>
+            />
             <View style={chatStyle.messageContainer}>
                 <TextInput
                     placeholderTextColor="#94a3b8"
@@ -136,11 +149,14 @@ export default function ChatScreen(){
             <Text style={chatStyle.status}>
                 {connected ? "Connected" : "Disconnected"}
             </Text>
-        </View>
+        </KeyboardAvoidingView>
     )
 }
 
 const chatStyle = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     title: {
         fontSize: 32,
     },
@@ -162,9 +178,9 @@ const chatStyle = StyleSheet.create({
         flexWrap: 'wrap',
     },
     chatView: {
+        flex: 1,
         padding: 20,
         borderRadius: 20,
-        height: 300,
         backgroundColor: '',
         marginTop: 10,
         marginBottom: 10,
