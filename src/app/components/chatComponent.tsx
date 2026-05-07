@@ -5,7 +5,7 @@ import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "r
 import { useAuth } from '../hooks/AuthContext';
 import useMessages from '../hooks/useMessages';
 import { getChatFromProblemId } from '../services/chatService';
-import useStompMessageService from '../services/stompMessageService';
+import useStompMessage from '../services/useStompMessage';
 import { Message } from '../types/Message';
 import MessageComponent from './messageComponent';
 
@@ -20,7 +20,7 @@ export default function ChatComponent(){
     const {messages, setMessages, getMessagesFromChat} = useMessages();
     const {isAuthenticated, user, token} = useAuth();
     const flatListRef = useRef<FlatList<Message>>(null);
-    const {initiateConnection, activate, disconnect, publishMessageWithHeaders, connected, setConnected} = useStompMessageService();
+    const {initiateConnection, activate, disconnect, publishMessageWithHeaders, connected, setConnected} = useStompMessage();
 
 
     /** Automatically scroll down upon new incoming messages

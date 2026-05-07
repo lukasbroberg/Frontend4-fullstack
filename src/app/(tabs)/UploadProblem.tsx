@@ -16,7 +16,7 @@ export default function UploadProblemScreen() {
 
   const {isAuthenticated, token} = useAuth();
   const {title, description, categories, dropdownOpen, selectedCategory, image,
-        setTitle, setDescription, setCategories, setDropdownOpen, setSelectedCategory, setImage,
+        setTitle, setDescription, setDropdownOpen, setSelectedCategory, setImage,
         handleUpload, pickImage} = useUploadProblem();
 
   if (!isAuthenticated) {

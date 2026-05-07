@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/AuthContext";
 
 const socketURL = API_BASE_URL.replace("http","ws")
 
-export default function useStompMessageService(){
+export default function useStompMessage(){
 
     const [connected, setConnected] = useState(false);
     const rxStompRef = useRef(new RxStomp());
