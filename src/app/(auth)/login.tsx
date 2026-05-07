@@ -1,17 +1,17 @@
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
 } from "react-native";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/AuthContext";
 
 /** Login screen with username and password fields. Navigates to feed on success. */
 export default function LoginScreen() {

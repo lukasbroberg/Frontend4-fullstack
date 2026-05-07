@@ -1,12 +1,11 @@
 import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { API_BASE_URL } from "../config/api";
-import { addRequirement, getRequirements, Requirement, toggleRequirement } from "../services/requirementService";
-import { darken, lighten } from "../tools/colorTool";
-import { Problem } from "../types/Problem";
+import { API_BASE_URL } from "../../config/api";
+import { addRequirement, getRequirements, Requirement, toggleRequirement } from "../../services/requirementService";
+import { Problem } from "../../types/Problem";
+import { darken, lighten } from "../../utils/colorTool";
 
 /** Full-page detail view for a single problem. Shows description, image, category, requirements, and chat. */
 export default function ProblemDetail(){
@@ -178,7 +177,7 @@ export default function ProblemDetail(){
                     style={styles.chatButton}
                     onPress={() =>
                         router.push({
-                            pathname: "/screens/chatPage",
+                            pathname: `/screens/chatPage`,
                             params: {
                                 id: problem.id.toString(),
                                 problemTitle: problem.title,

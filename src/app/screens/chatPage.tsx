@@ -3,25 +3,24 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MessageComponent from '../components/messageComponent';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/AuthContext';
+import useMessages from '../hooks/useMessages';
 import { getChatFromProblemId } from '../services/chatService';
-import useMessageViewModel from '../services/messageViewModel';
-import useStompMessageService from '../services/stompMessageService';
+import useStompMessage from '../services/useStompMessage';
 import { Message } from '../types/Message';
 
 
 
-export default function ChatScreen(){
+export default function ChatPage(){
 
     const params = useLocalSearchParams();
     const problemId: number = parseInt(params.id as string);
     const [chatId, setChatId] = useState<number>();
-    const [connected, setConnected] = useState(false);
     const [messageInput, setMessageInput] = useState('');
-    const {messages, setMessages, fetchMessagesFromChatId} = useMessageViewModel();
+    const {messages, setMessages, getMessagesFromChat} = useMessages();
     const {isAuthenticated, user, token} = useAuth();
     const flatListRef = useRef<FlatList<Message>>(null);
-    const {initiateConnection, activate, disconnect, publishMessageWithHeaders} = useStompMessageService();
+    const {initiateConnection, activate, disconnect, publishMessageWithHeaders, connected, setConnected} = useStompMessage();
 
     const newestMessagesFirst = useMemo(() => {
         return [...messages].reverse();
@@ -43,7 +42,6 @@ export default function ChatScreen(){
     }
 
     function handleSendMessage(){
-
         try{
             var message_req = publishMessageWithHeaders(chatId,messageInput);
             if(message_req){
@@ -59,9 +57,8 @@ export default function ChatScreen(){
     useEffect(() => {
 
         const autoLoadAndConnect = async() => {
-
-            //Get chatId
             try{
+                //Get chatId
                 const _chatId: number = await getChatFromProblemId(problemId);
                 await setChatId(_chatId);
                 
@@ -71,12 +68,10 @@ export default function ChatScreen(){
                     receiveMessage,
                     async () => {
                         try{
-                            await fetchMessagesFromChatId(_chatId);
+                            await getMessagesFromChat(_chatId);
                         }catch(err){
-                            //Don't do anything for now
-                            console.log(err);
+                            alert('Unable to get chats messages');
                         }
-                        setConnected(true);
                     }
                 );
                 await activate();
@@ -91,7 +86,6 @@ export default function ChatScreen(){
         //Cleanup connection on leaving the chat page
         return() => {
             var disconnectResult = disconnect();
-            setConnected(!disconnectResult);
         }
     },[problemId])
 

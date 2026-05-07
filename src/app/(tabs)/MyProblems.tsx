@@ -8,7 +8,7 @@ import {
 } from "react-native";
 
 import ProblemCard from "../components/ProblemCard";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../hooks/AuthContext";
 import {
   deleteProblem,
   getMyProblems,
