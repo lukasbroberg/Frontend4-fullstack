@@ -23,7 +23,7 @@ export default function TabsLayout() {
                     onPress={logout}
                     style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
                 >
-                    <Text style={styles.primaryButtonText}>Logout</Text>
+                    <Text style={styles.primaryButtonText}>Log ud</Text>
                 </Pressable>
             );
         }
@@ -34,13 +34,13 @@ export default function TabsLayout() {
                     onPress={() => router.replace("/(auth)/login")}
                     style={({ pressed }) => [styles.ghostButton, pressed && styles.buttonPressed]}
                 >
-                    <Text style={styles.ghostButtonText}>Login</Text>
+                    <Text style={styles.ghostButtonText}>Log ind</Text>
                 </Pressable>
                 <Pressable
                     onPress={() => router.replace("/(auth)/register")}
                     style={({ pressed }) => [styles.primaryButton, pressed && styles.buttonPressed]}
                 >
-                    <Text style={styles.primaryButtonText}>Register</Text>
+                    <Text style={styles.primaryButtonText}>Opret Konto</Text>
                 </Pressable>
             </View>
         );
@@ -52,7 +52,7 @@ export default function TabsLayout() {
             screenOptions={{
                 headerShown: true,
                 headerRight: loginButtonHeader,
-                headerTitleAlign: "center",
+                headerTitleAlign: "left",
                 headerStyle: styles.header,
                 headerTitleStyle: styles.headerTitle,
                 headerShadowVisible: false,
@@ -76,8 +76,8 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name="UploadProblem"
                 options={{
-                    title: "Create problem",
-                    tabBarLabel: "Create",
+                    title: "Opret problem",
+                    tabBarLabel: "Opret",
                     tabBarIcon: ({ color, focused }) => (
                         <Feather name="plus-circle" color={color} size={focused ? 22 : 20} />
                     ),
@@ -86,7 +86,7 @@ export default function TabsLayout() {
             <Tabs.Screen
                 name="MyProblems"
                 options={{
-                    title: "My problems",
+                    title: "Mine problemer",
                     tabBarLabel: "Mine",
                     tabBarIcon: ({ color, focused }) => (
                         <Feather name="user" color={color} size={focused ? 22 : 20} />
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
         color: colors.text,
         fontSize: 18,
         fontWeight: "800",
+        marginLeft: 4,
     },
     tabBar: {
         backgroundColor: colors.card,

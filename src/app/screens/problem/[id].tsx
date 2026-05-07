@@ -17,6 +17,7 @@ export default function ProblemDetail(){
     const [modalVisible, setModalVisible] = useState(false);
     const [newRequirement, setNewRequirement] = useState("");
     const [loading, setLoading] = useState(false);
+    const [imageModalVisible, setImageModalVisible] = useState(false);
 
     useEffect(() => {
         fetchRequirements();
@@ -84,13 +85,20 @@ export default function ProblemDetail(){
                         <Text style={styles.description}>{problem.description}</Text>
 
                         {problem.imageUrl ? (
-                            <View style={styles.problemImageContainer}>
+                            <TouchableOpacity
+                                style={styles.problemImageContainer}
+                                onPress={() => setImageModalVisible(true)}
+                                activeOpacity={0.9}
+                            >
                                 <Image
                                     source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
                                     style={styles.problemImage}
-                                    resizeMode="contain"
+                                    resizeMode="cover"
                                 />
-                            </View>
+                                <View style={styles.imageOverlay}>
+                                    <Text style={styles.imageOverlayText}>Tryk for at se større</Text>
+                                </View>
+                            </TouchableOpacity>
                         ) : null}
 
                         {/* Requirements sektion */}
@@ -228,6 +236,30 @@ export default function ProblemDetail(){
                     </View>
                 </View>
             </Modal>
+            <Modal
+                visible={imageModalVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => setImageModalVisible(false)}
+            >
+                <View style={styles.imageModalOverlay}>
+                    <TouchableOpacity
+                        style={styles.imageModalCloseButton}
+                        onPress={() => setImageModalVisible(false)}
+                        activeOpacity={0.85}
+                    >
+                        <Text style={styles.imageModalCloseText}>Luk</Text>
+                    </TouchableOpacity>
+
+                    {problem.imageUrl ? (
+                        <Image
+                            source={{ uri: `${API_BASE_URL}${problem.imageUrl}` }}
+                            style={styles.fullscreenImage}
+                            resizeMode="contain"
+                        />
+                    ) : null}
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -280,16 +312,59 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 16,
   },
-  problemImageContainer: {
+    problemImageContainer: {
     width: '100%',
-    height: 240,
-    borderRadius: 10,
+    height: 250,
+    borderRadius: 16,
     marginBottom: 16,
     overflow: 'hidden',
     backgroundColor: '#f3f4f6',
     justifyContent: 'center',
     alignItems: 'center',
-  },
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    },
+    imageOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    },
+    imageOverlayText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '800',
+    textAlign: 'center',
+    },
+    imageModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(15, 23, 42, 0.92)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    },
+    imageModalCloseButton: {
+    position: 'absolute',
+    top: 55,
+    right: 20,
+    zIndex: 2,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    paddingVertical: 9,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    },
+    imageModalCloseText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '800',
+    },
+    fullscreenImage: {
+    width: '100%',
+    height: '82%',
+    },
   problemImage: {
     width: '100%',
     height: '100%',

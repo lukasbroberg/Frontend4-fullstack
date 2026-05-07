@@ -5,7 +5,7 @@ export default function AuthLayout(){
     return(
         <Stack screenOptions={{
             headerShown: true,
-            headerTitle: 'Authentication',
+            headerTitle: 'Feed',
             headerLeft: BackNavigationBtn,
         }}>
             <Stack.Screen name="login"></Stack.Screen>

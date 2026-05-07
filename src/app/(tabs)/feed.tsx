@@ -16,9 +16,9 @@ import {
 
 const SORT_OPTIONS: { label: string; value: ProblemSort }[] = [
   { label: "Flest likes", value: "likesdesc" },
-  { label: "Faerrest likes", value: "likesasc" },
+  { label: "Færrest likes", value: "likesasc" },
   { label: "Nyeste", value: "datedesc" },
-  { label: "Aeldste", value: "dateasc" },
+  { label: "Ældste", value: "dateasc" },
 ];
 
 export default function Feed() {
