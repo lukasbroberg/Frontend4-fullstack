@@ -162,7 +162,7 @@ export default function ProblemDetail(){
                         {problem.createdByCurrentUser && (
                             <TouchableOpacity
                                 style={styles.editButton}
-                                onPress={() => router.push({pathname: '/problem/edit/[id]', params: { id: problem.id, data: JSON.stringify(problem)}} as any)}
+                                onPress={() => router.push({pathname: 'screens/problem/edit/[id]', params: { id: problem.id, data: JSON.stringify(problem)}} as any)}
                             >
                                 <Feather name="edit" size={20} color="#333" />
                                 <Text style={styles.editText}>Redigere</Text>
