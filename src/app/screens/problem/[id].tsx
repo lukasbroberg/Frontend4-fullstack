@@ -185,7 +185,7 @@ export default function ProblemDetail(){
                     style={styles.chatButton}
                     onPress={() =>
                         router.push({
-                            pathname: `/screens/ChatPage`,
+                            pathname: `/screens/chatPage`,
                             params: {
                                 id: problem.id.toString(),
                                 problemTitle: problem.title,

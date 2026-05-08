@@ -12,8 +12,8 @@ import { Message } from '../types/Message';
 
 
 export default function ChatPage(){
-
     const params = useLocalSearchParams();
+    console.log(params)
     const problemId: number = parseInt(params.id as string);
     const [chatId, setChatId] = useState<number>();
     const [messageInput, setMessageInput] = useState('');
@@ -59,7 +59,9 @@ export default function ChatPage(){
         const autoLoadAndConnect = async() => {
             try{
                 //Get chatId
+
                 const _chatId: number = await getChatFromProblemId(problemId);
+                console.log(_chatId)
                 await setChatId(_chatId);
                 
                 //Initiate STOMP handshake
