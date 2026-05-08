@@ -15,9 +15,11 @@ import {
   View
 } from "react-native";
 
+import { Feather } from "@expo/vector-icons";
 import SignInBox from "../components/signInBox";
 import { useAuth } from "../hooks/AuthContext";
 import useUploadProblem from "../hooks/useUploadProblem";
+import { darken, lighten } from "../utils/colorTool";
 
 export default function UploadProblemScreen() {
 
@@ -44,13 +46,15 @@ export default function UploadProblemScreen() {
             activeOpacity={0.85}
             style={[
               styles.dropdownButton,
-              selectedCategory ? { backgroundColor: selectedCategory.hexColor } : null,
+              selectedCategory ? { backgroundColor: lighten(selectedCategory.hexColor) } : null,
             ]}
           >
-            <Text style={styles.dropdownButtonText}>
+            <Text style={[
+                styles.dropdownButtonText, 
+                selectedCategory ? {color: darken(selectedCategory.hexColor)}: null]}>
               {selectedCategory?.name == null ? "Vælg kategori" : selectedCategory.name}
             </Text>
-            <Text style={styles.dropdownArrow}>▼</Text>
+            <Feather name="chevron-down"></Feather>
           </TouchableOpacity>
         </View>
       );
@@ -61,14 +65,21 @@ export default function UploadProblemScreen() {
         {categories.map((item, index) => (
           <TouchableOpacity
             key={`${item.name}-${index}`}
-            style={[styles.dropdownItem, { backgroundColor: item.hexColor }]}
+            style={[
+              styles.dropdownItem,
+              item.hexColor ? { backgroundColor: lighten(item.hexColor) } : null
+            ]}
             activeOpacity={0.85}
             onPress={() => {
               setDropdownOpen(false);
               setSelectedCategory(item);
             }}
           >
-            <Text style={styles.dropdownItemText}>{item.name}</Text>
+            <Text style={[
+              styles.dropdownItemText,
+              item.hexColor ? { color: darken(item.hexColor) } : null
+            ]}>
+              {item.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
