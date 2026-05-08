@@ -1,15 +1,15 @@
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../hooks/AuthContext";
 
@@ -41,10 +41,10 @@ export default function LoginScreen() {
 
       router.replace("/(tabs)/feed");
     } catch (error: any) {
-      console.log(
+      /*console.log(
         "LOGIN SCREEN ERROR:",
         error?.response?.data || error?.message || error
-      );
+      );*/
 
       const message =
         typeof error?.response?.data === "string"
